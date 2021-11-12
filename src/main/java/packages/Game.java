@@ -217,6 +217,9 @@ public class Game {
             User player = this.players.get(i);
             if (player.getID().equals(id)) {
                 this.players.remove(i);
+                if (this.players.size() == 1) {
+                    this.end();
+                }
             }
         }
     }

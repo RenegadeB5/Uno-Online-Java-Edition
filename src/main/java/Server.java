@@ -20,7 +20,7 @@ public class Server extends WebSocketServer {
 	private int connections;
 	private int ongoingGames;
 	private ArrayList<User> users;
-	//private ArrayList<Game> games;
+	private ArrayList<Game> games;
 
 	public static void main(String[] args) throws InterruptedException, IOException {
 		Server server = new Server(Integer.parseInt(System.getenv("PORT")));
@@ -33,7 +33,7 @@ public class Server extends WebSocketServer {
 		this.connections = 0;
 		this.ongoingGames = 0;
 		this.users = new ArrayList<User>();
-		//this.games = new ArrayList<Game>();
+		this.games = new ArrayList<Game>();
 	}
 	
 	public void gameBroadcast(String gameID, ByteBuffer packet) {

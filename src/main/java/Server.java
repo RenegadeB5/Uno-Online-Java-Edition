@@ -76,6 +76,7 @@ public class Server extends WebSocketServer {
 		List<String> gameIDs = this.games.stream()
 			.map(game -> game.getID())
 			.collect(Collectors.toList());
+		if (this.games.size() == 0) {gameIDs = [""]}
 		Game game = null;
 		if (user.getGameID() != null) {
 			game = this.games.get(gameIDs.indexOf(user.getGameID()));
@@ -91,12 +92,14 @@ public class Server extends WebSocketServer {
 					else {
 						Game new_game = new Game(gameID, user);
 						this.games.add(new_game);
+						user.setGameID(gameID);
 						user.sendMessage("Game successfully created");
 					}
 				}
 				else if (action == 1) {
 					if (gameIDs.contains(gameID)) {
 						game.addUser(user);
+						user.setGameID(gameID);
 						game.broadcastUsers();
 					}
 					else {

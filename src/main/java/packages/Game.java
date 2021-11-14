@@ -42,11 +42,11 @@ public class Game {
         for (int i = 0; i < 10; i++) {
             this.shuffle();
         }
-        for (int i = 0, boolean run = true; run; i++) {
-            Card card = this.deck.get(i);=
+        for (int i = 0, j = 0; j == 0; i++) {
+            Card card = this.deck.get(i);
             if (card.number().equals("wild") || card.number().equals("+4")) {continue;}
-            this.top = card;
-            run = false;
+            this.top = new Card(card.color(), card.number());
+            j = 1;
         }
     }
 
@@ -165,15 +165,16 @@ public class Game {
             List<String> numbers = playerCards.stream()
                 .map(c -> c.number())
 			    .collect(Collectors.toList());
-            List<String> four = ["blue", "green", "yellow", "red"];
-            if ((!colors.contains(card[0]) || !four.contains(card[0])) && !numbers.contains(card[1])) {
+            List<String> four = Arrays.asList("blue", "green", "yellow", "red");
+            if ((!colors.contains(card[0]) && !numbers.contains(card[1])) || !four.contains(card[0])) {
                 go = false;
             }
             if (!go) {
                 player.sendMessage("You can't put that down!");
                 return;
             }
-            top = card;
+            this.top.color(card[0]);
+            this.top.number(card[1]);
         }
         topCard.setTop(false);
         String color = top[0];

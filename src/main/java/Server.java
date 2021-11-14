@@ -96,7 +96,7 @@ public class Server extends WebSocketServer {
 			User user = this.users.get(index);
 			if (user.getGameID() != null) {
 				Game game = this.games.stream()
-				.filter(game -> game.getID().equals(user.getGameID()))
+				.filter(gme -> gme.getID().equals(user.getGameID()))
 				.collect(Collectors.toList())
 				.get(0);
 				game.remove(user.getID());

@@ -7,8 +7,8 @@ public class Card {
     private boolean top;
 
     public Card(String color, String number) {
-        this.color = c_color;
-        this.number = c_number;
+        this.c_color = color;
+        this.c_number = number;
         this.position = 0;
         this.top = false;
     }

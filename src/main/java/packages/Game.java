@@ -238,9 +238,17 @@ public class Game {
     }
 
     public void start() {
-        this.deal(7);
-        this.broadcastCards();
-        this.ongoing = true;
+        boolean ready = true;
+        for (User user: this.players) {
+            if (!user.isReady()) {
+                ready = false;
+            }
+        }
+        if (ready) {
+            this.deal(7);
+            this.broadcastCards();
+            this.ongoing = true;
+        }
     }
 
     public void end() {

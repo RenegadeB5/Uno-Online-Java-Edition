@@ -57,12 +57,79 @@ public class Server extends WebSocketServer {
 	public void onMessage(WebSocket ws, ByteBuffer packet) {
 		Decoder decoder = new Decoder(packet);
 		int type = decoder.getInt();
+		String ID = ""+ws;
+		User user = this.users.stream()
+			.filter(usr -> usr.getID().equals(ID))
+			.collect(Collectors.toList())
+			.get(0);
+		List<String> gameIDs = this.games.stream()
+			.map(game -> game.getID())
+			.collect(Collectors.toList());
 		switch (type) {
-			case 1: {
-				String ID = ""+ws;
+			case 1:
 				this.users.add(new User(ID, decoder.getString(), ws));
 				break;
-			}
+			case 2:
+				int action = decoder.getInt();
+				String gameID = decoder.getString();
+				if (action == 0) {
+					if (gameIDs.contains(gameID)) {
+						user.sendMessage("That ID isn't available!");
+					}
+					else {
+						Game new_game = new Game(gameID, user);
+						this.games.add(new_game);
+						user.sendMessage("Game successfully created");
+					}
+				}
+				else if (action == 1) {
+					if (gameIDs.contains(gameID)) {
+						Game game = this.games.get(this.gameIDs.indexOf(gameID));
+						game.addUser(user);
+						game.broadcastUsers();
+					}
+					else {
+						user.sendMessage("That game ID doesn\'t exist!");
+					}
+				}
+				else {
+					System.out.println("The server got a message it doesn't know about: header 2");
+				}
+				break;
+			case 3:
+				if (user.getGameID() != null) {
+					String message = decoder.getString();
+					Game game = this.games.get(gameIDs.indexOf(user.getGameID()));
+					game.broadcastMessage(ID, message);
+				}
+				break;
+			case 4:
+				List<String> cards = new ArrayList<String>();
+				int amount = decoder.getInt();
+				for (int i = 0; i < amount; i++) {
+					cards.add(decoder.getString());
+				}
+				if (user.getGameID() != null) {
+					Game game = this.games.get(gameIDs.indexOf(user.getGameID()));
+					game.play(ID, cards);
+				}
+				break;
+			case 5:
+				if (user.getGameID() != null) {
+					Game game = this.games.get(gameIDs.indexOf(user.getGameID()));
+					game.remove(ID);
+					user.setGameID(null);
+					user.setReady(false);
+				}
+				break;
+			case 6:
+				if (user.getGameID() != null) {
+					Game game = this.games.get(gameIDs.indexOf(user.getGameID()));
+					user.setReady(true);
+					game.broadcastUsers();
+					game.start();
+				}
+				break;
 		}
 	}
 	

@@ -73,7 +73,7 @@ public class Server extends WebSocketServer {
 			.filter(usr -> usr.getID().equals(ID))
 			.collect(Collectors.toList())
 			.get(0);
-		List<String> gameIDs = [""];
+		List<String> gameIDs = Arrays.asList("");
 		if (this.games.size() != 0) {
 			gameIDs = this.games.stream()
 				.map(game -> game.getID())

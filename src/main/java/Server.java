@@ -65,6 +65,10 @@ public class Server extends WebSocketServer {
 		List<String> gameIDs = this.games.stream()
 			.map(game -> game.getID())
 			.collect(Collectors.toList());
+		Game game = null;
+		if (user.getGameID() != null) {
+			game = this.games.get(gameIDs.indexOf(user.getGameID()));
+		}
 		switch (type) {
 			case 1:
 				this.users.add(new User(ID, decoder.getString(), ws));
@@ -84,7 +88,6 @@ public class Server extends WebSocketServer {
 				}
 				else if (action == 1) {
 					if (gameIDs.contains(gameID)) {
-						Game game = this.games.get(this.gameIDs.indexOf(gameID));
 						game.addUser(user);
 						game.broadcastUsers();
 					}
@@ -97,9 +100,8 @@ public class Server extends WebSocketServer {
 				}
 				break;
 			case 3:
-				if (user.getGameID() != null) {
+				if (game != null) {
 					String message = decoder.getString();
-					Game game = this.games.get(gameIDs.indexOf(user.getGameID()));
 					game.broadcastMessage(ID, message);
 				}
 				break;
@@ -109,22 +111,19 @@ public class Server extends WebSocketServer {
 				for (int i = 0; i < amount; i++) {
 					cards.add(decoder.getString());
 				}
-				if (user.getGameID() != null) {
-					Game game = this.games.get(gameIDs.indexOf(user.getGameID()));
+				if (game != null) {
 					game.play(ID, cards);
 				}
 				break;
 			case 5:
-				if (user.getGameID() != null) {
-					Game game = this.games.get(gameIDs.indexOf(user.getGameID()));
+				if (game != null) {
 					game.remove(ID);
 					user.setGameID(null);
 					user.setReady(false);
 				}
 				break;
 			case 6:
-				if (user.getGameID() != null) {
-					Game game = this.games.get(gameIDs.indexOf(user.getGameID()));
+				if (game != null) {
 					user.setReady(true);
 					game.broadcastUsers();
 					game.start();

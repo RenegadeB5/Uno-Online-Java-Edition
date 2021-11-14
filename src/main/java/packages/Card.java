@@ -1,32 +1,32 @@
 package packages;
 
 public class Card {
-    private String color;
-    private String number;
+    private String c_color;
+    private String c_number;
     private int position;
     private boolean top;
 
     public Card(String color, String number) {
-        this.color = color;
-        this.number = number;
+        this.color = c_color;
+        this.number = c_number;
         this.position = 0;
         this.top = false;
     }
 
     public String color() {
-        return this.color;
+        return this.c_color;
     }
 
     public void color(String color) {
-        this.color = color;
+        this.c_color = color;
     }
 
     public String number() {
-        return this.number;
+        return this.c_number;
     }
 
     public void number(String number) {
-        this.number = number;
+        this.c_number = number;
     }
 
     public int position() {
@@ -38,14 +38,6 @@ public class Card {
     }
 
     public String stringify() {
-        return this.color + "-" + this.number;
-    }
-
-    public void setTop(boolean b) {
-        this.top = b;
-    }
-
-    public boolean isTop() {
-        return this.top;
+        return this.c_color + "-" + this.c_number;
     }
 }

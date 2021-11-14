@@ -104,13 +104,8 @@ public class Game {
 			    .collect(Collectors.toList());
             boolean contains = numbers.contains("+2") || numbers.contains("+4");
             if (!contains) {
-                List<Card> publicCards = this.deck.stream()
-                    .filter(card -> card.position() == 0)
-			        .collect(Collectors.toList());
-                for (int i = 0; i < this.draw; i++) {
-                    publicCards.get(i).position(this.turn);
-                }
-                this.players.get(this.nextTurn(1)).sendMessage("You drew " + this.draw + " cards!");
+                this.deal(this.players.get(this.turn-1).getID(), this.draw);
+                this.players.get(this.nextTurn(1)).sendMessage("You picked up " + this.draw + " cards!");
                 this.turn = this.nextTurn(2);
                 this.draw = 0;
             }
@@ -118,6 +113,7 @@ public class Game {
         else {
             this.turn = this.nextTurn(1);
         }
+        this.deal(this.players.get(this.turn-1).getID(), this.draw);
         this.broadcastCards();
         this.players.get(this.turn-1).sendMessage("It's your turn!");
     }
@@ -147,16 +143,17 @@ public class Game {
         List<Card> playerCards = this.deck.stream()
             .filter(card -> card.position() == this.getPosition(id))
 			.collect(Collectors.toList());
+        Card top = new Card(this.top.color(), this.top.number());
         for (int i = 0; i < cardStrings.size(); i++) {
             String[] card = cardStrings.get(i).split("-");
             boolean go = false;
-            if ((this.top.color.equals(card[0]) && i == 0)) {
+            if ((top.color().equals(card[0]) && i == 0)) {
                 go = true;
             }
-            if ((this.top.number().equals("wild") || this.top.number().equals("+4")) && i == 0) {
+            if (card[1].equals("wild") || card[1].equals("+4")) && i == 0) {
                 go = true;
             }
-            if (top[1].equals(card[1])) {
+            if (this.top.number().equals(card[1])) {
                 go = true;
             }
             List<String> colors = playerCards.stream()
@@ -173,12 +170,13 @@ public class Game {
                 player.sendMessage("You can't put that down!");
                 return;
             }
-            this.top.color(card[0]);
-            this.top.number(card[1]);
+            top.color(card[0]);
+            top.number(card[1]);
         }
-        topCard.setTop(false);
-        String color = top[0];
-        String number = top[1];
+        String color = top.color();
+        String number = top.number();
+        this.top.color(color);
+        this.top.number(number);
         for (String cd: cardStrings) {
             String[] card = cd.split("-");
             Card cardToSwitch = this.deck.stream()
@@ -198,11 +196,6 @@ public class Game {
                     break;
             }
         }
-        Card newTopCard = this.deck.stream()
-            .filter(card -> card.position() == 0 && card.color().equals(color) && card.number().equals(number))
-            .collect(Collectors.toList())
-            .get(0);
-        newTopCard.setTop(true);
         this.updateTurn();
     }
 
@@ -221,7 +214,24 @@ public class Game {
     private void deal(int amount) {
         for (int i = 0, j = 0; i < this.players.size(); i++) {
             for (int k = 0; k < 7; k++) {
+                Card card = this.deck.get(j);
+                if ((!card.color().equals("wild") || !card.color().equals("+4")) && (card.number().equals("wild") || card.number().equals("+4")) {
+                    continue;
+                }
                 this.deck.get(j).position(i+1);
+                j++;
+            }
+        }
+    }
+
+    private void deal(String id, int amount) {
+        for (int i = 0, j = 0; i < this.players.size(); i++) {
+            for (int k = 0; k < 7; k++) {
+                Card card = this.deck.get(j);
+                if (card.position() != 0 || ((!card.color().equals("wild") || !card.color().equals("+4")) && (card.number().equals("wild") || card.number().equals("+4"))) {
+                    continue;
+                }
+                this.deck.get(j).position(this.getPosition(id));
                 j++;
             }
         }

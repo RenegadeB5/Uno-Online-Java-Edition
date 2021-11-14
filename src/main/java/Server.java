@@ -57,6 +57,7 @@ public class Server extends WebSocketServer {
 	public void onMessage(WebSocket ws, ByteBuffer packet) {
 		Decoder decoder = new Decoder(packet);
 		int type = decoder.getInt();
+		System.out.println(type);
 		String ID = ""+ws;
 		List<String> ids = this.users.stream()
 			.map(usr -> usr.getID())

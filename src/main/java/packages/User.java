@@ -60,6 +60,7 @@ public class User {
 		Encoder encoder = new Encoder();
 		encoder.addInt(3);
 		encoder.addString(m);
+		System.out.println(m);
 		this.ws.send(encoder.finish());
 	}
 	

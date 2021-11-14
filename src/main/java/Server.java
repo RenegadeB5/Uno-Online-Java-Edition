@@ -63,6 +63,10 @@ public class Server extends WebSocketServer {
 			.collect(Collectors.toList());
 		if (type == 1 && !ids.contains(ID)) {
 			this.users.add(new User(ID, decoder.getString(), ws));
+			Encoder enc = new Encoder();
+			enc.addInt(1);
+			enc.addString(ID);
+			ws.send(enc.finish());
 			return;
 		}
 		User user = this.users.stream()

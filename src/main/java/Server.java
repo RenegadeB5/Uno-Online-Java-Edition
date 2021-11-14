@@ -58,6 +58,13 @@ public class Server extends WebSocketServer {
 		Decoder decoder = new Decoder(packet);
 		int type = decoder.getInt();
 		String ID = ""+ws;
+		List<String> ids = this.users.stream()
+			.map(usr -> usr.getID())
+			.collect(Collectors.toList());
+		if (type == 1 && !ids.contains(ID)) {
+			this.users.add(new User(ID, decoder.getString(), ws));
+			return;
+		}
 		User user = this.users.stream()
 			.filter(usr -> usr.getID().equals(ID))
 			.collect(Collectors.toList())
@@ -70,9 +77,6 @@ public class Server extends WebSocketServer {
 			game = this.games.get(gameIDs.indexOf(user.getGameID()));
 		}
 		switch (type) {
-			case 1:
-				this.users.add(new User(ID, decoder.getString(), ws));
-				break;
 			case 2:
 				int action = decoder.getInt();
 				String gameID = decoder.getString();

@@ -17,8 +17,16 @@ public class Card {
         return this.color;
     }
 
+    public void color(String color) {
+        this.color = color;
+    }
+
     public String number() {
         return this.number;
+    }
+
+    public void number(String number) {
+        this.number = number;
     }
 
     public int position() {

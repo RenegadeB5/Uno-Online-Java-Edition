@@ -15,6 +15,7 @@ public class Game {
     private int draw;
     private int skip;
     private boolean ongoing;
+    private Card top;
 
     public Game(String id, User user) {
         this.id = id;
@@ -41,14 +42,10 @@ public class Game {
         for (int i = 0; i < 10; i++) {
             this.shuffle();
         }
-        boolean run = true;
-        List<String> colors = this.deck.stream()
-                .map(card -> card.color())
-			    .collect(Collectors.toList());
-        for (int i = 0; run; i++) {
-            String color = colors.get(i);
-            if (color.equals("wild") || color.equals("+4")) {continue;}
-            this.deck.get(i).setTop(true);
+        for (int i = 0, boolean run = true; run; i++) {
+            Card card = this.deck.get(i);=
+            if (card.number().equals("wild") || card.number().equals("+4")) {continue;}
+            this.top = card;
             run = false;
         }
     }
@@ -150,18 +147,13 @@ public class Game {
         List<Card> playerCards = this.deck.stream()
             .filter(card -> card.position() == this.getPosition(id))
 			.collect(Collectors.toList());
-        Card topCard = this.deck.stream()
-            .filter(card -> card.isTop())
-            .collect(Collectors.toList())
-            .get(0);
-        String[] top = {topCard.color(), topCard.number()};
         for (int i = 0; i < cardStrings.size(); i++) {
             String[] card = cardStrings.get(i).split("-");
             boolean go = false;
-            if ((top[0].equals(card[0]) && i == 0)) {
+            if ((this.top.color.equals(card[0]) && i == 0)) {
                 go = true;
             }
-            if ((top[1].equals("wild") || top[1].equals("+4")) && i == 0) {
+            if ((this.top.number().equals("wild") || this.top.number().equals("+4")) && i == 0) {
                 go = true;
             }
             if (top[1].equals(card[1])) {
@@ -173,7 +165,8 @@ public class Game {
             List<String> numbers = playerCards.stream()
                 .map(c -> c.number())
 			    .collect(Collectors.toList());
-            if (!colors.contains(card[0]) && !numbers.contains(card[1]) && (!top[1].equals("wild") || !top[1].equals("+4"))) {
+            List<String> four = ["blue", "green", "yellow", "red"];
+            if ((!colors.contains(card[0]) || !four.contains(card[0])) && !numbers.contains(card[1])) {
                 go = false;
             }
             if (!go) {

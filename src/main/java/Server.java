@@ -93,6 +93,16 @@ public class Server extends WebSocketServer {
 				.map(usr -> usr.getID())
 				.collect(Collectors.toList());
 			int index = ids.indexOf(id);
+			User user = this.users.get(index);
+			if (user.getGameID() != null) {
+				Game game = this.games.stream()
+				.filter(game -> game.getID().equals(user.getGameID()))
+				.collect(Collectors.toList())
+				.get(0);
+				game.remove(user.getID());
+				game.broadcastMessage(user.getName() + " has left!");
+				this.ongoingGames -= 1;
+			}
 			this.users.remove(index);
 		}
 		this.connections -= 1;

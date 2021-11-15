@@ -27,7 +27,8 @@ public class Game {
         this.draw = 0;
         this.ongoing = false;
         try {
-            new File(".").getAbsolutePath();
+            String f = new File(".").getAbsolutePath();
+            System.out.println(f);
             File file = new File("cards.dat");
             Scanner input = new Scanner(file);
             while (input.hasNext()) {

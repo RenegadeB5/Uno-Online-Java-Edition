@@ -27,7 +27,8 @@ public class Game {
         this.draw = 0;
         this.ongoing = false;
         try {
-            String f = new File(".").getAbsolutePath();
+            File f = new File(".");
+            this.findAllFilesInFolder(f);
             System.out.println(f);
             File file = new File("./packages/cards.dat");
             Scanner input = new Scanner(file);
@@ -55,6 +56,16 @@ public class Game {
             }
         }
     }
+
+    public static void findAllFilesInFolder(File folder) {
+		for (File file : folder.listFiles()) {
+			if (!file.isDirectory()) {
+				System.out.println(file.getName());
+			} else {
+				findAllFilesInFolder(file);
+			}
+		}
+	}
 
     public boolean ongoing() {
         return this.ongoing;

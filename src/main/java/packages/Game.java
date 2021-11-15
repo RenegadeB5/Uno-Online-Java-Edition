@@ -39,7 +39,8 @@ public class Game {
             }
         }
         catch (IOException err) {
-            System.out.println(err.getMessage() + "\n" + err.printStackTrace());
+            System.out.println(err.getMessage());
+            err.printStackTrace();
         }
         for (int i = 0; i < 10; i++) {
             this.shuffle();

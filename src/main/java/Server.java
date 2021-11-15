@@ -45,14 +45,15 @@ public class Server extends WebSocketServer {
 	@Override
 	public void onOpen(WebSocket ws, ClientHandshake hs) {
 		String id = ""+ws;
+		broadcast("hi");
 		System.out.println(id + " has connected!");
+		this.users.add(new User(id, ws));
 		Encoder encoder = new Encoder();
 		// 1 for sending name for now
 		encoder.addInt(1);
 		encoder.addString(""+ws);
 		ws.send(encoder.finish());
 		ws.send("hi");
-		this.users.add(new User(id, ws));
 		this.connections += 1;
 	}
 	
@@ -166,23 +167,21 @@ public class Server extends WebSocketServer {
 		List<User> users = this.users.stream()
 			.filter(usr -> usr.getID().equals(id))
 			.collect(Collectors.toList());
-		if (users.size() != 0) {
-			List<String> ids = this.users.stream()
-				.map(usr -> usr.getID())
-				.collect(Collectors.toList());
-			int index = ids.indexOf(id);
-			User user = this.users.get(index);
-			if (user.getGameID() != null) {
-				Game game = this.games.stream()
-				.filter(gme -> gme.getID().equals(user.getGameID()))
-				.collect(Collectors.toList())
-				.get(0);
-				game.remove(user.getID());
-				game.broadcastMessage(user.getName() + " has left!");
-				this.ongoingGames -= 1;
-			}
-			this.users.remove(index);
+		List<String> ids = this.users.stream()
+			.map(usr -> usr.getID())
+			.collect(Collectors.toList());
+		int index = ids.indexOf(id);
+		User user = this.users.get(index);
+		if (user.getGameID() != null) {
+			Game game = this.games.stream()
+			.filter(gme -> gme.getID().equals(user.getGameID()))
+			.collect(Collectors.toList())
+			.get(0);
+			game.remove(user.getID());
+			game.broadcastMessage(user.getName() + " has left!");
+			this.ongoingGames -= 1;
 		}
+		this.users.remove(index);
 		this.connections -= 1;
 	}
 }

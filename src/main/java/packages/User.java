@@ -22,9 +22,9 @@ public class User {
 	private boolean ready;
 	private WebSocket ws;
 
-	public User(String id, String name, WebSocket ws) {
+	public User(String id, WebSocket ws) {
 		this.id = id;
-		this.name = name;
+		this.name = null;
 		this.gameID = null;
 		this.ready = false;
 		this.ws = ws;
@@ -36,6 +36,10 @@ public class User {
 	
 	public String getName() {
 		return this.name;
+	}
+
+	public void setName(String name) {
+		this.name = name;
 	}
 	
 	public void setGameID(String gameID) {

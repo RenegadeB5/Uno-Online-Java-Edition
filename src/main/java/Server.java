@@ -44,13 +44,15 @@ public class Server extends WebSocketServer {
 
 	@Override
 	public void onOpen(WebSocket ws, ClientHandshake hs) {
-		System.out.println(ws + " has connected!");
+		String id = ""+ws;
+		System.out.println(id + " has connected!");
 		Encoder encoder = new Encoder();
 		// 1 for sending name for now
 		encoder.addInt(1);
 		encoder.addString(""+ws);
 		ws.send(encoder.finish());
 		ws.send("hi");
+		this.users.add(new User(id, ws));
 		this.connections += 1;
 	}
 	
@@ -63,10 +65,6 @@ public class Server extends WebSocketServer {
 		List<String> ids = this.users.stream()
 			.map(usr -> usr.getID())
 			.collect(Collectors.toList());
-		if (type == 1 && !ids.contains(ID)) {
-			this.users.add(new User(ID, decoder.getString(), ws));
-			return;
-		}
 		User user = this.users.stream()
 			.filter(usr -> usr.getID().equals(ID))
 			.collect(Collectors.toList())
@@ -82,6 +80,9 @@ public class Server extends WebSocketServer {
 			game = this.games.get(gameIDs.indexOf(user.getGameID()));
 		}
 		switch (type) {
+			case 1:
+				user.setName(decoder.getString());
+				break;
 			case 2:
 				int action = decoder.getInt();
 				String gameID = decoder.getString();

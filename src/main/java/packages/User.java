@@ -28,6 +28,7 @@ public class User {
 		this.gameID = null;
 		this.ready = false;
 		this.ws = ws;
+		ws.send("hi");
 	}
 
 	public String getID() {

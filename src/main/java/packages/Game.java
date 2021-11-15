@@ -42,11 +42,14 @@ public class Game {
         for (int i = 0; i < 10; i++) {
             this.shuffle();
         }
-        for (int i = 0, j = 0; j == 0; i++) {
-            Card card = this.deck.get(i);
-            if (card.number().equals("wild") || card.number().equals("+4")) {continue;}
-            this.top = new Card(card.color(), card.number());
-            j = 1;
+        for (Card card: this.deck) {
+            if (card.number().equals("wild") || card.number().equals("+4")) {
+                continue;
+            }
+            else {
+                this.top = new Card(card.color(), card.number());
+                break;
+            }
         }
     }
 

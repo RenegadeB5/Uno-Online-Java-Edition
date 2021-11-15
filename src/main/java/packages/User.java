@@ -28,7 +28,6 @@ public class User {
 		this.gameID = null;
 		this.ready = false;
 		this.ws = ws;
-		ws.send("hi");
 	}
 
 	public String getID() {
@@ -65,7 +64,6 @@ public class User {
 		Encoder encoder = new Encoder();
 		encoder.addInt(3);
 		encoder.addString(m);
-		System.out.println(m);
 		this.ws.send(encoder.finish());
 	}
 	

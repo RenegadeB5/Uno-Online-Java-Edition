@@ -62,6 +62,7 @@ public class Game {
 			if (!file.isDirectory()) {
 				System.out.println(file.getName());
 			} else {
+                System.out.println(file.getName() + ": ");
 				findAllFilesInFolder(file);
 			}
 		}

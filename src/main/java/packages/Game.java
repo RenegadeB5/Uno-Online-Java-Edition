@@ -27,9 +27,7 @@ public class Game {
         this.draw = 0;
         this.ongoing = false;
         try {
-            File f = new File(".");
-            this.findAllFilesInFolder(f);
-            System.out.println(f);
+            System.out.println(new File(".").getAbsoluteFile());
             File file = new File("cards.dat");
             Scanner input = new Scanner(file);
             while (input.hasNext()) {
@@ -56,17 +54,6 @@ public class Game {
             }
         }
     }
-
-    public static void findAllFilesInFolder(File folder) {
-		for (File file : folder.listFiles()) {
-			if (!file.isDirectory()) {
-				System.out.println(file.getName());
-			} else {
-                System.out.println(file.getName() + ": ");
-				findAllFilesInFolder(file);
-			}
-		}
-	}
 
     public boolean ongoing() {
         return this.ongoing;

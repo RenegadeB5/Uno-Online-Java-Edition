@@ -27,7 +27,7 @@ public class Game {
         this.draw = 0;
         this.ongoing = false;
         try {
-            File file = new File("/packages/cards.dat");
+            File file = new File("cards.dat");
             Scanner input = new Scanner(file);
             while (input.hasNext()) {
 	            String line = input.nextLine();

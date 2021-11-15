@@ -30,7 +30,7 @@ public class Game {
             File f = new File(".");
             this.findAllFilesInFolder(f);
             System.out.println(f);
-            File file = new File("./packages/cards.dat");
+            File file = new File("cards.dat");
             Scanner input = new Scanner(file);
             while (input.hasNext()) {
 	            String line = input.nextLine();

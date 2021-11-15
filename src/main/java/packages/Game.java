@@ -28,6 +28,7 @@ public class Game {
         this.ongoing = false;
         try {
             System.out.println(new File(".").getAbsoluteFile());
+            System.out.println(System.getProperty("user.dir"));
             File file = new File("/app/cards.dat");
             Scanner input = new Scanner(file);
             while (input.hasNext()) {

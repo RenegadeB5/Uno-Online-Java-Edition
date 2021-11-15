@@ -45,7 +45,6 @@ public class Server extends WebSocketServer {
 	@Override
 	public void onOpen(WebSocket ws, ClientHandshake hs) {
 		String id = ""+ws;
-		broadcast("hi");
 		System.out.println(id + " has connected!");
 		this.users.add(new User(id, ws));
 		Encoder encoder = new Encoder();
@@ -53,7 +52,6 @@ public class Server extends WebSocketServer {
 		encoder.addInt(1);
 		encoder.addString(""+ws);
 		ws.send(encoder.finish());
-		ws.send("hi");
 		this.connections += 1;
 	}
 	

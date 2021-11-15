@@ -1,28 +1,3 @@
-/*
- * Copyright (c) 2010-2020 Nathan Rajlich
- *
- *  Permission is hereby granted, free of charge, to any person
- *  obtaining a copy of this software and associated documentation
- *  files (the "Software"), to deal in the Software without
- *  restriction, including without limitation the rights to use,
- *  copy, modify, merge, publish, distribute, sublicense, and/or sell
- *  copies of the Software, and to permit persons to whom the
- *  Software is furnished to do so, subject to the following
- *  conditions:
- *
- *  The above copyright notice and this permission notice shall be
- *  included in all copies or substantial portions of the Software.
- *
- *  THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
- *  EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES
- *  OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
- *  NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT
- *  HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY,
- *  WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
- *  FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
- *  OTHER DEALINGS IN THE SOFTWARE.
- */
-
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -35,86 +10,178 @@ import org.java_websocket.drafts.Draft;
 import org.java_websocket.drafts.Draft_6455;
 import org.java_websocket.handshake.ClientHandshake;
 import org.java_websocket.server.WebSocketServer;
+import java.util.*;
+import java.io.*;
+import java.lang.*;
+import java.util.stream.*;
+import packages.*;
 
-/**
- * A simple WebSocketServer implementation. Keeps track of a "chatroom".
- */
 public class Server extends WebSocketServer {
+	private int connections;
+	private int ongoingGames;
+	private ArrayList<User> users;
+	private ArrayList<Game> games;
 
-  public Server(int port) throws UnknownHostException {
-    super(new InetSocketAddress(port));
-  }
+	public static void main(String[] args) throws InterruptedException, IOException {
+		Server server = new Server(Integer.parseInt(System.getenv("PORT")));
+		server.start();
+		System.out.println("Server started on port: " + server.getPort());
+	}
 
-  public Server(InetSocketAddress address) {
-    super(address);
-  }
+	public Server(int port) throws UnknownHostException {
+		super(new InetSocketAddress(Integer.parseInt(System.getenv("PORT"))));
+		this.connections = 0;
+		this.ongoingGames = 0;
+		this.users = new ArrayList<User>();
+		this.games = new ArrayList<Game>();
+	}
+	
+	public void gameBroadcast(String gameID, ByteBuffer packet) {
+		List<User> users = this.users.stream()
+			.filter(usr -> usr.getGameID().equals(gameID))
+			.collect(Collectors.toList());
+	}
 
-  public Server(int port, Draft_6455 draft) {
-    super(new InetSocketAddress(port), Collections.<Draft>singletonList(draft));
-  }
+	@Override
+	public void onOpen(WebSocket ws, ClientHandshake hs) {
+		String id = ""+ws;
+		broadcast("hi");
+		System.out.println(id + " has connected!");
+		this.users.add(new User(id, ws));
+		Encoder encoder = new Encoder();
+		// 1 for sending name for now
+		encoder.addInt(1);
+		encoder.addString(""+ws);
+		ws.send(encoder.finish());
+		ws.send("hi");
+		this.connections += 1;
+	}
+	
+	@Override
+	public void onMessage(WebSocket ws, ByteBuffer packet) {
+		Decoder decoder = new Decoder(packet);
+		int type = decoder.getInt();
+		System.out.println(type);
+		String ID = ""+ws;
+		List<String> ids = this.users.stream()
+			.map(usr -> usr.getID())
+			.collect(Collectors.toList());
+		User user = this.users.stream()
+			.filter(usr -> usr.getID().equals(ID))
+			.collect(Collectors.toList())
+			.get(0);
+		List<String> gameIDs = Arrays.asList("");
+		if (this.games.size() != 0) {
+			gameIDs = this.games.stream()
+				.map(game -> game.getID())
+				.collect(Collectors.toList());
+		}
+		Game game = null;
+		if (user.getGameID() != null) {
+			game = this.games.get(gameIDs.indexOf(user.getGameID()));
+		}
+		switch (type) {
+			case 1:
+				user.setName(decoder.getString());
+				break;
+			case 2:
+				int action = decoder.getInt();
+				String gameID = decoder.getString();
+				if (action == 0) {
+					if (gameIDs.contains(gameID)) {
+						user.sendMessage("That ID isn't available!");
+					}
+					else {
+						Game new_game = new Game(gameID, user);
+						this.games.add(new_game);
+						user.setGameID(gameID);
+						user.sendMessage("Game successfully created");
+					}
+				}
+				else if (action == 1) {
+					if (gameIDs.contains(gameID)) {
+						game.addUser(user);
+						user.setGameID(gameID);
+						game.broadcastUsers();
+					}
+					else {
+						user.sendMessage("That game ID doesn\'t exist!");
+					}
+				}
+				else {
+					System.out.println("The server got a message it doesn't know about: header 2");
+				}
+				break;
+			case 3:
+				if (game != null) {
+					String message = decoder.getString();
+					game.broadcastMessage(ID, message);
+				}
+				break;
+			case 4:
+				List<String> cards = new ArrayList<String>();
+				int amount = decoder.getInt();
+				for (int i = 0; i < amount; i++) {
+					cards.add(decoder.getString());
+				}
+				if (game != null) {
+					game.play(ID, cards);
+				}
+				break;
+			case 5:
+				if (game != null) {
+					game.remove(ID);
+					user.setGameID(null);
+					user.setReady(false);
+				}
+				break;
+			case 6:
+				if (game != null) {
+					user.setReady(true);
+					game.broadcastUsers();
+					game.start();
+				}
+				break;
+		}
+	}
+	
+	@Override
+	public void onMessage(WebSocket ws, String message) {
+		System.out.println(message);
+	}
 
-  @Override
-  public void onOpen(WebSocket conn, ClientHandshake handshake) {
-    conn.send("Welcome to the server!"); //This method sends a message to the new client
-    broadcast("new connection: " + handshake
-        .getResourceDescriptor()); //This method sends a message to all clients connected
-    System.out.println(
-        conn.getRemoteSocketAddress().getAddress().getHostAddress() + " entered the room!");
-  }
+	@Override
+	public void onError(WebSocket conn, Exception ex) {
+		ex.printStackTrace();
+	}
 
-  @Override
-  public void onClose(WebSocket conn, int code, String reason, boolean remote) {
-    broadcast(conn + " has left the room!");
-    System.out.println(conn + " has left the room!");
-  }
+	@Override
+	public void onStart() {
+		setConnectionLostTimeout(100);
+	}
 
-  @Override
-  public void onMessage(WebSocket conn, String message) {
-    broadcast(message);
-    System.out.println(conn + ": " + message);
-  }
-
-  @Override
-  public void onMessage(WebSocket conn, ByteBuffer message) {
-    broadcast(message.array());
-    System.out.println(conn + ": " + message);
-  }
-
-
-  public static void main(String[] args) throws InterruptedException, IOException {
-    int port = Integer.parseInt(System.getenv("PORT")); // 843 flash policy port
-    try {
-      port = Integer.parseInt(args[0]);
-    } catch (Exception ex) {
-    }
-    Server s = new Server(port);
-    s.start();
-    System.out.println("ChatServer started on port: " + s.getPort());
-
-    BufferedReader sysin = new BufferedReader(new InputStreamReader(System.in));
-    while (true) {
-      String in = sysin.readLine();
-      s.broadcast(in);
-      if (in.equals("exit")) {
-        s.stop(1000);
-        break;
-      }
-    }
-  }
-
-  @Override
-  public void onError(WebSocket conn, Exception ex) {
-    ex.printStackTrace();
-    if (conn != null) {
-      // some errors like port binding failed may not be assignable to a specific websocket
-    }
-  }
-
-  @Override
-  public void onStart() {
-    System.out.println("Server started!");
-    setConnectionLostTimeout(0);
-    setConnectionLostTimeout(100);
-  }
-
+	@Override
+	public void onClose(WebSocket ws, int code, String reason, boolean remote) {
+		String id = ""+ws;
+		System.out.println(id + " has left!");
+		List<User> users = this.users.stream()
+			.filter(usr -> usr.getID().equals(id))
+			.collect(Collectors.toList());
+		List<String> ids = this.users.stream()
+			.map(usr -> usr.getID())
+			.collect(Collectors.toList());
+		int index = ids.indexOf(id);
+		User user = this.users.get(index);
+		if (user.getGameID() != null) {
+			Game game = this.games.stream()
+			.filter(gme -> gme.getID().equals(user.getGameID()))
+			.collect(Collectors.toList())
+			.get(0);
+			game.remove(user.getID());
+			game.broadcastMessage(user.getName() + " has left!");
+			this.ongoingGames -= 1;
+		}
+		this.users.remove(index);
+		this.connections -= 1;
+	}
 }

@@ -29,7 +29,7 @@ public class Game {
         try {
             String f = new File(".").getAbsolutePath();
             System.out.println(f);
-            File file = new File("/app/cards.dat");
+            File file = new File("/app/packages/cards.dat");
             Scanner input = new Scanner(file);
             while (input.hasNext()) {
 	            String line = input.nextLine();

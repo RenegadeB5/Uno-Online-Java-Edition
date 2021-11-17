@@ -106,7 +106,7 @@ public class Game {
             List<String> numbers = cards.stream()
 			    .map(card -> card.number())
 			    .collect(Collectors.toList());
-            boolean contains = numbers.contains("+2") || numbers.contains("+4");
+            boolean contains = numbers.contains(this.top.number());
             if (!contains) {
                 this.deal(this.players.get(this.turn-1).getID(), this.draw);
                 this.players.get(this.nextTurn(1)).sendMessage("You picked up " + this.draw + " cards!");
@@ -197,6 +197,9 @@ public class Game {
                     break;
                 case "skip":
                     this.skip += 1;
+                    break;
+                case "reverse":
+                    this.switchDirection();
                     break;
             }
         }

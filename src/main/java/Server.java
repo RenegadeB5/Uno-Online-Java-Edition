@@ -78,6 +78,9 @@ public class Server extends WebSocketServer {
 		if (user.getGameID() != null) {
 			game = this.games.get(gameIDs.indexOf(user.getGameID()));
 		}
+		if (type != 1 && user.getName() == null) {
+			return;
+		}
 		switch (type) {
 			case 1:
 				user.setName(decoder.getString());

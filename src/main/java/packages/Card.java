@@ -4,13 +4,11 @@ public class Card {
     private String c_color;
     private String c_number;
     private int position;
-    private boolean top;
 
     public Card(String color, String number) {
         this.c_color = color;
         this.c_number = number;
         this.position = 0;
-        this.top = false;
     }
 
     public String color() {

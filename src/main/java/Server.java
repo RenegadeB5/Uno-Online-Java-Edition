@@ -159,7 +159,6 @@ public class Server extends WebSocketServer {
 		List<String> ids = this.users.stream()
 			.map(usr -> usr.getID())
 			.collect(Collectors.toList());
-		int index = ids.indexOf(id);
 		User user = this.users.get(index);
 		if (user.getGameID() != null) {
 			Game game = this.games.stream()
@@ -180,6 +179,7 @@ public class Server extends WebSocketServer {
 			}
 			this.ongoingGames -= 1;
 		}
+		int index = ids.indexOf(id);
 		this.users.remove(index);
 		this.connections -= 1;
 	}

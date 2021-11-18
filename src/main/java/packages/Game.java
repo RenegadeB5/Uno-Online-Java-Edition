@@ -62,6 +62,10 @@ public class Game {
 		return this.id;
 	}
 
+    public int playerCount() {
+        return this.players.size();
+    }
+
     public void addUser(User user) {
         this.players.add(user);
         this.broadcastUsers();

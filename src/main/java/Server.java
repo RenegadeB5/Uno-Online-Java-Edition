@@ -61,23 +61,17 @@ public class Server extends WebSocketServer {
 		int type = decoder.getInt();
 		System.out.println(type);
 		String ID = ""+ws;
-		List<String> ids = this.users.stream()
-			.map(usr -> usr.getID())
-			.collect(Collectors.toList());
 		User user = this.users.stream()
 			.filter(usr -> usr.getID().equals(ID))
 			.collect(Collectors.toList())
 			.get(0);
-		List<String> gameIDs = Arrays.asList("");
+		List<String> gameIDs = (this.games.size() == 0) ? Arrays.asList("") : this.games.stream()
+			.map(game -> game.getID())
+			.collect(Collectors.toList());
 		if (this.games.size() != 0) {
-			gameIDs = this.games.stream()
-				.map(game -> game.getID())
-				.collect(Collectors.toList());
+			gameIDs = 
 		}
-		Game game = null;
-		if (user.getGameID() != null) {
-			game = this.games.get(gameIDs.indexOf(user.getGameID()));
-		}
+		Game game = (user.getGameID() != null) ? this.games.get(gameIDs.indexOf(user.getGameID())) : null;
 		if (type != 1 && user.getName() == null) {
 			return;
 		}
@@ -131,16 +125,16 @@ public class Server extends WebSocketServer {
 				break;
 			case 5:
 				if (game != null) {
-					game.remove(ID);
-					user.setGameID(null);
-					user.setReady(false);
+					user.setReady(true);
+					game.broadcastUsers();
+					game.start();
 				}
 				break;
 			case 6:
 				if (game != null) {
-					user.setReady(true);
-					game.broadcastUsers();
-					game.start();
+					game.remove(ID);
+					user.setGameID(null);
+					user.setReady(false);
 				}
 				break;
 		}
@@ -165,9 +159,6 @@ public class Server extends WebSocketServer {
 	public void onClose(WebSocket ws, int code, String reason, boolean remote) {
 		String id = ""+ws;
 		System.out.println(id + " has left!");
-		List<User> users = this.users.stream()
-			.filter(usr -> usr.getID().equals(id))
-			.collect(Collectors.toList());
 		List<String> ids = this.users.stream()
 			.map(usr -> usr.getID())
 			.collect(Collectors.toList());
@@ -175,11 +166,21 @@ public class Server extends WebSocketServer {
 		User user = this.users.get(index);
 		if (user.getGameID() != null) {
 			Game game = this.games.stream()
-			.filter(gme -> gme.getID().equals(user.getGameID()))
-			.collect(Collectors.toList())
-			.get(0);
+				.filter(gme -> gme.getID().equals(user.getGameID()))
+				.collect(Collectors.toList())
+				.get(0);
+			List<String> gameIDs = this.games.stream()
+				.map(gme -> gme.getID())
+				.collect(Collectors.toList());
 			game.remove(user.getID());
 			game.broadcastMessage(user.getName() + " has left!");
+			if (game.playerCount() == 1) {
+
+			}
+			else if (game.playerCount() == 0) {
+				int index = gameIDs.indexOf(user.getGameID());
+				this.games.remove(index);
+			}
 			this.ongoingGames -= 1;
 		}
 		this.users.remove(index);

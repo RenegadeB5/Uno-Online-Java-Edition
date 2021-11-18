@@ -273,6 +273,7 @@ public class Game {
     private void broadcastCards() {
         Encoder encoder = new Encoder();
         encoder.addInt(4);
+        encoder.addString(this.top.color() + "-" + this.top.number());
         encoder.addInt(this.players.size());
         for (int i = 0; i < this.players.size(); i++) {
             User user = this.players.get(i);

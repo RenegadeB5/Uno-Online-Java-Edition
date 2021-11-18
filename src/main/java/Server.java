@@ -68,9 +68,6 @@ public class Server extends WebSocketServer {
 		List<String> gameIDs = (this.games.size() == 0) ? Arrays.asList("") : this.games.stream()
 			.map(game -> game.getID())
 			.collect(Collectors.toList());
-		if (this.games.size() != 0) {
-			gameIDs = 
-		}
 		Game game = (user.getGameID() != null) ? this.games.get(gameIDs.indexOf(user.getGameID())) : null;
 		if (type != 1 && user.getName() == null) {
 			return;

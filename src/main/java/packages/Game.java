@@ -272,28 +272,34 @@ public class Game {
     }
 
     private void broadcastCards() {
-        Encoder encoder = new Encoder();
-        encoder.addInt(4);
-        encoder.addInt(this.direction);
-        encoder.addString(this.top.color() + "-" + this.top.number());
-        encoder.addInt(this.players.size());
         for (int i = 0; i < this.players.size(); i++) {
             User user = this.players.get(i);
-            encoder.addString(user.getID());
-            encoder.addString(user.getName());
-            int pos = i+1;
-            List<Card> cards = this.deck.stream()
-                .filter(card -> card.position() == pos)
-			    .collect(Collectors.toList());
-            encoder.addInt(cards.size());
-            for (Card card: cards) {
-                String s = card.color() + "-" + card.number();
-                encoder.addString(s);
+            int index = i;
+            Encoder encoder = new Encoder();
+            encoder.addInt(4);
+            encoder.addInt(this.direction);
+            encoder.addString(this.players.get(this.nextTurn(1) - 1).getID());
+            encoder.addString(this.top.color() + "-" + this.top.number());
+            List<Card> playerCards = this.deck.stream()
+                .filter(card -> card.position() == index+1)
+                .collect(Collectors.toList());
+            encoder.addInt(playerCards.size());
+            for (Card c: playerCards) {
+                encoder.addString(c.color() + "-" + c.number());
             }
-        }
-        ByteBuffer buffer = encoder.finish();
-        for (User user: this.players) {
-            user.send(buffer);
+            encoder.addInt(this.players.size());
+            for (int j = 0; j < this.players.size(); j++) {
+                User player = this.players.get(j);
+                int idx = j;
+                encoder.addString(player.getID());
+                encoder.addString(player.getName());
+                int count = this.deck.stream()
+                    .filter(card -> card.position() == idx+1)
+                    .collect(Collectors.toList())
+                    .size();
+                encoder.addInt(count);
+            }
+            user.send(encoder.finish());
         }
     }
 

@@ -25,6 +25,7 @@ public class Game {
         this.turn = 1;
         this.direction = 1;
         this.draw = 0;
+        this.skip = 0;
         this.ongoing = false;
         try {
             File file = new File("./src/main/java/packages/cards.dat");
@@ -35,6 +36,7 @@ public class Game {
                 Card card = new Card(c[0], c[1]);
                 this.deck.add(card);
             }
+            input.close();
         }
         catch (IOException err) {
             System.out.println(err.getMessage());
@@ -135,7 +137,6 @@ public class Game {
     }
 
     public void play(String id, List<String> cardStrings) {
-        boolean error = false;
         User player = this.players.stream()
             .filter(user -> user.getID().equals(id))
 			.collect(Collectors.toList())
@@ -273,6 +274,7 @@ public class Game {
     private void broadcastCards() {
         Encoder encoder = new Encoder();
         encoder.addInt(4);
+        encoder.addInt(this.direction);
         encoder.addString(this.top.color() + "-" + this.top.number());
         encoder.addInt(this.players.size());
         for (int i = 0; i < this.players.size(); i++) {

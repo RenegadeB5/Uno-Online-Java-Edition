@@ -1,6 +1,4 @@
 package packages;
-import java.util.*;
-import java.lang.*;
 import java.nio.*;
 
 public class Encoder {

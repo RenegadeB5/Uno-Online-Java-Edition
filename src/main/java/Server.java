@@ -87,9 +87,13 @@ public class Server extends WebSocketServer {
 				}
 				else if (action == 1) {
 					if (gameIDs.contains(gameID)) {
-						game.addUser(user);
+						Game gameToJoin = this.games.stream()
+							.filter(gme -> gme.getID().equals(gameID))
+							.collect(Collectors.toList())
+							.get(0);
+						gameToJoin.addUser(user);
 						user.setGameID(gameID);
-						game.broadcastUsers();
+						gameToJoin.broadcastUsers();
 					}
 					else {
 						user.sendMessage("That game ID doesn\'t exist!");

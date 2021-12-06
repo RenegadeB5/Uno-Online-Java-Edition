@@ -116,11 +116,12 @@ public class Game {
 			    .collect(Collectors.toList());
             boolean contains = numbers.contains(this.top.number());
             if (!contains) {
-                this.deal(this.players.get(this.turn-2).getID(), this.draw);
-                this.players.get(this.nextTurn(1)-2).sendMessage("You picked up " + this.draw + " cards!");
-                this.deal(this.players.get(this.nextTurn(1)-2).getID(), this.draw);
-                this.turn = this.nextTurn(2);
+                int draw = this.draw;
                 this.draw = 0;
+                this.deal(this.players.get(this.turn-2).getID(), draw);
+                this.players.get(this.nextTurn(1)-2).sendMessage("You picked up " + draw + " cards!");
+                this.deal(this.players.get(this.nextTurn(1)-2).getID(), draw);
+                this.turn = this.nextTurn(2);
             }
         }
         else {

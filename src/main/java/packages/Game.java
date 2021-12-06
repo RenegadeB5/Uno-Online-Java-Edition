@@ -270,17 +270,14 @@ public class Game {
     }
 
     public void deal(String id, int amount) {
-        for (int i = 0, j = 0; i < this.players.size(); i++) {
-            for (int k = 0; k < amount + this.draw;) {
-                Card card = this.deck.get(j);
-                if ((!card.color().equals("wild") && (card.number().equals("wild") || card.number().equals("+4"))) || card.position() != 0) {
-                    j++;
-                    continue;
-                }
-                this.deck.get(j).position(this.getPosition(id));
+        for (int i = 0, j = 0; i < amount + this.draw; i++) {
+            Card card = this.deck.get(j);
+            if ((!card.color().equals("wild") && (card.number().equals("wild") || card.number().equals("+4"))) || card.position() != 0) {
                 j++;
-                k++;
+                continue;
             }
+            this.deck.get(j).position(this.getPosition(id));
+            j++;
         }
         if (this.draw != 0) {
             this.draw = 0;

@@ -5,7 +5,7 @@ public class Encoder {
     private ByteBuffer buffer;
 
     public Encoder() {
-        this.buffer = ByteBuffer.allocate(1500);
+        this.buffer = ByteBuffer.allocate(10000);
     }
 
     public int getPosition() {

@@ -270,7 +270,7 @@ public class Game {
     }
 
     public void deal(String id, int amount) {
-        for (int i = 0, j = 0; i < amount + this.draw; i++) {
+        for (int i = 0, j = 0; i < amount + this.draw;) {
             Card card = this.deck.get(j);
             if ((!card.color().equals("wild") && (card.number().equals("wild") || card.number().equals("+4"))) || card.position() != 0) {
                 j++;
@@ -278,6 +278,7 @@ public class Game {
             }
             this.deck.get(j).position(this.getPosition(id));
             j++;
+            i++;
         }
         if (this.draw != 0) {
             this.draw = 0;

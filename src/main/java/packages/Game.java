@@ -248,7 +248,7 @@ public class Game {
         }
     }
 
-    private void deal(String id, int amount) {
+    public void deal(String id, int amount) {
         for (int i = 0, j = 0; i < this.players.size(); i++) {
             for (int k = 0; k < 7;) {
                 Card card = this.deck.get(j);
@@ -292,6 +292,7 @@ public class Game {
             Encoder encoder = new Encoder();
             encoder.addInt(4);
             encoder.addInt(this.direction);
+            encoder.addString(this.players.get(this.turn-2).getID());
             encoder.addString(this.players.get(this.nextTurn(1) - 2).getID());
             encoder.addString(this.top.color() + "-" + this.top.number());
             List<Card> playerCards = this.deck.stream()

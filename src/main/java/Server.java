@@ -109,12 +109,19 @@ public class Server extends WebSocketServer {
 				}
 				break;
 			case 4:
-				List<String> cards = new ArrayList<String>();
-				int amount = decoder.getInt();
-				for (int i = 0; i < amount; i++) {
-					cards.add(decoder.getString());
-				}
 				if (game != null) {
+					List<String> cards = new ArrayList<String>();
+					int amount = decoder.getInt();
+					for (int i = 0; i < amount; i++) {
+						String card = decoder.getString();
+						if (card.equals("draw")) {
+							game.deal(user.getID(), 1);
+							return;
+						} 
+						else {
+							cards.add(card);
+						}
+					}
 					game.play(ID, cards);
 				}
 				break;

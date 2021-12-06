@@ -284,6 +284,7 @@ public class Game {
                 .filter(card -> card.position() == index+1)
                 .collect(Collectors.toList());
             encoder.addInt(playerCards.size());
+            System.out.println(playerCards.size());
             for (Card c: playerCards) {
                 encoder.addString(c.color() + "-" + c.number());
             }

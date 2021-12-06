@@ -5,7 +5,7 @@ public class Encoder {
     private ByteBuffer buffer;
 
     public Encoder() {
-        this.buffer = ByteBuffer.allocate(10000);
+        this.buffer = ByteBuffer.allocate(1500);
     }
 
     public int getPosition() {
@@ -25,7 +25,6 @@ public class Encoder {
 
     public ByteBuffer finish() {
         int length = this.buffer.position();
-        System.out.println(length);
         ByteBuffer buffer = ByteBuffer.allocate(length);
         this.buffer.flip();
         for (int i = 0; i < length; i++) {

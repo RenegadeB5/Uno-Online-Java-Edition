@@ -177,7 +177,7 @@ public class Game {
             List<String> combo = playerCards.stream()
                 .map(c -> c.color() + "-" + c.number())
 			    .collect(Collectors.toList());
-            if (!(colors.contains(card[0]) && numbers.contains(card[1]))) {
+            if (!combo.contains(card[0] + "-" + card[1])) {
                 go = false;
             }
             if ((card[1].equals("wild") || card[1].equals("+4")) && (numbers.contains(card[0]) || numbers.contains(card[1]))) {
@@ -222,7 +222,7 @@ public class Game {
                 .ifPresent(crd -> crd.position(0));
             if (card[1].equals("wild") || card[1].equals("+4")) {
                 this.deck.stream()
-                    .filter(c -> c.position() == this.getPosition(id) && c.number().equals(card[1]))
+                    .filter(c -> c.position() == this.turn && c.number().equals(card[1]))
 			        .findFirst()
                     .ifPresent(crd -> crd.position(0));
             }

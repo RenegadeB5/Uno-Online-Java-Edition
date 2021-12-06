@@ -30,12 +30,6 @@ public class Server extends WebSocketServer {
 		this.users = new ArrayList<User>();
 		this.games = new ArrayList<Game>();
 	}
-	
-	public void gameBroadcast(String gameID, ByteBuffer packet) {
-		List<User> users = this.users.stream()
-			.filter(usr -> usr.getGameID().equals(gameID))
-			.collect(Collectors.toList());
-	}
 
 	@Override
 	public void onOpen(WebSocket ws, ClientHandshake hs) {

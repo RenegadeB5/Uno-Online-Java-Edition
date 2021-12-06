@@ -100,10 +100,10 @@ public class Game {
 
     private void updateTurn() {
         if (this.skip != 0) {
-            this.turn = this.nextTurn(1 + this.skip);
             for (int i = this.turn; i < this.skip; i=this.nextTurn(1)) {
                 this.players.get(i).sendMessage("You were skipped!");
             }
+            this.turn = this.nextTurn(1 + this.skip);
             this.skip = 0;
         }
         else if (this.draw != 0) {
@@ -116,7 +116,8 @@ public class Game {
             boolean contains = numbers.contains(this.top.number());
             if (!contains) {
                 this.deal(this.players.get(this.turn-2).getID(), this.draw);
-                this.players.get(this.nextTurn(1)).sendMessage("You picked up " + this.draw + " cards!");
+                this.players.get(this.nextTurn(1)-2).sendMessage("You picked up " + this.draw + " cards!");
+                this.deal(this.players.get(this.nextTurn(1)-2).getID(), this.draw);
                 this.turn = this.nextTurn(2);
                 this.draw = 0;
             }
@@ -124,7 +125,6 @@ public class Game {
         else {
             this.turn = this.nextTurn(1);
         }
-        this.deal(this.players.get(this.turn-2).getID(), this.draw);
         this.broadcastCards();
         this.players.get(this.turn-2).sendMessage("It's your turn!");
     }
@@ -217,6 +217,7 @@ public class Game {
                     break;
             }
         }
+        this.shuffle();
         this.updateTurn();
     }
 

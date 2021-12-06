@@ -22,7 +22,7 @@ public class Game {
         this.players = new ArrayList<User>();
         this.deck = new ArrayList<Card>();
         this.players.add(user);
-        this.turn = 1;
+        this.turn = 2;
         this.direction = 1;
         this.draw = 0;
         this.skip = 0;
@@ -51,6 +51,7 @@ public class Game {
             }
             else {
                 this.top = new Card(card.color(), card.number());
+                card.position(1);
                 break;
             }
         }
@@ -78,17 +79,17 @@ public class Game {
         List<String> userIds = this.players.stream()
             .map(user -> user.getID())
 			.collect(Collectors.toList());
-        return userIds.indexOf(id) + 1;
+        return userIds.indexOf(id) + 2;
     }
 
     private int nextTurn(int n) {
         int turn = this.turn;
         for (int i = 0; i < n; i++) {
-            if (turn == this.players.size() && this.direction == 1) {
-                turn = 1;
+            if (turn == this.players.size()+1 && this.direction == 1) {
+                turn = 2;
             }
-            else if (turn == 0 && this.direction == -1) {
-                turn = this.players.size();
+            else if (turn == 2 && this.direction == -1) {
+                turn = this.players.size()+1;
             }
             else {
                 turn += this.direction;
@@ -114,7 +115,7 @@ public class Game {
 			    .collect(Collectors.toList());
             boolean contains = numbers.contains(this.top.number());
             if (!contains) {
-                this.deal(this.players.get(this.turn-1).getID(), this.draw);
+                this.deal(this.players.get(this.turn-2).getID(), this.draw);
                 this.players.get(this.nextTurn(1)).sendMessage("You picked up " + this.draw + " cards!");
                 this.turn = this.nextTurn(2);
                 this.draw = 0;
@@ -123,9 +124,9 @@ public class Game {
         else {
             this.turn = this.nextTurn(1);
         }
-        this.deal(this.players.get(this.turn-1).getID(), this.draw);
+        this.deal(this.players.get(this.turn-2).getID(), this.draw);
         this.broadcastCards();
-        this.players.get(this.turn-1).sendMessage("It's your turn!");
+        this.players.get(this.turn-2).sendMessage("It's your turn!");
     }
 
     private void switchDirection() {
@@ -141,7 +142,7 @@ public class Game {
             .filter(user -> user.getID().equals(id))
 			.collect(Collectors.toList())
             .get(0);
-        if (!this.players.get(this.turn-1).getID().equals(id)) {
+        if (!this.players.get(this.turn-2).getID().equals(id)) {
             player.sendMessage("It isn't your turn!");
             return;
         }
@@ -186,6 +187,16 @@ public class Game {
         String number = top.number();
         this.top.color(color);
         this.top.number(number);
+        Card oldTopCard = this.deck.stream()
+            .filter(c -> c.position() == 1)
+		    .collect(Collectors.toList())
+            .get(0);
+        Card newTopCard = this.deck.stream()
+            .filter(c -> c.position() == 0 && c.color().equals(color) && c.number().equals(number))
+            .collect(Collectors.toList())
+            .get(0);
+        oldTopCard.position(0);
+        newTopCard.position(1);
         for (String cd: cardStrings) {
             String[] card = cd.split("-");
             Card cardToSwitch = this.deck.stream()
@@ -216,7 +227,7 @@ public class Game {
             User player = this.players.get(i);
             if (player.getID().equals(id)) {
                 this.players.remove(i);
-                if (this.players.size() == 1) {
+                if (this.players.size() == 1 || this.players.size() == 0) {
                     this.end();
                 }
             }
@@ -227,11 +238,11 @@ public class Game {
         for (int i = 0, j = 0; i < this.players.size(); i++) {
             for (int k = 0; k < amount; k++) {
                 Card card = this.deck.get(j);
-                if ((card.color().equals("wild") && (!card.number().equals("wild") || !card.number().equals("+4"))) || this.top.equals(card)) {
+                if ((card.color().equals("wild") && (!card.number().equals("wild") && !card.number().equals("+4"))) || card.position() == 1) {
                     j++;
                     continue;
                 }
-                this.deck.get(j).position(i+1);
+                this.deck.get(j).position(i+2);
                 j++;
             }
         }
@@ -279,10 +290,10 @@ public class Game {
             Encoder encoder = new Encoder();
             encoder.addInt(4);
             encoder.addInt(this.direction);
-            encoder.addString(this.players.get(this.nextTurn(1) - 1).getID());
+            encoder.addString(this.players.get(this.nextTurn(1) - 2).getID());
             encoder.addString(this.top.color() + "-" + this.top.number());
             List<Card> playerCards = this.deck.stream()
-                .filter(card -> card.position() == index+1)
+                .filter(card -> card.position() == index+2)
                 .collect(Collectors.toList());
             encoder.addInt(playerCards.size());
             System.out.println(playerCards.size());
@@ -296,7 +307,7 @@ public class Game {
                 encoder.addString(player.getID());
                 encoder.addString(player.getName());
                 int count = this.deck.stream()
-                    .filter(card -> card.position() == idx+1)
+                    .filter(card -> card.position() == idx+2)
                     .collect(Collectors.toList())
                     .size();
                 encoder.addInt(count);

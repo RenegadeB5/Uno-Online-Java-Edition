@@ -101,8 +101,9 @@ public class Game {
 
     private void updateTurn() {
         if (this.skip != 0) {
-            for (int i = this.turn; i < this.skip; i=this.nextTurn(1)) {
-                this.players.get(i).sendMessage("You were skipped!");
+            for (int i = 0, j = this.turn; i < this.skip; i++) {
+                this.players.get(j-2).sendMessage("You were skipped!");
+                j = this.nextTurn(1);
             }
             this.turn = this.nextTurn(1 + this.skip);
             this.skip = 0;
@@ -257,7 +258,7 @@ public class Game {
         for (int i = 0, j = 0; i < this.players.size(); i++) {
             for (int k = 0; k < amount;) {
                 Card card = this.deck.get(j);
-                if ((!card.color().equals("wild") && (card.number().equals("wild") || card.number().equals("+4"))) || card.position() == 1) {
+                if ((!card.color().equals("wild") && (card.number().equals("wild") || card.number().equals("+4"))) || card.position() != 0) {
                     j++;
                     continue;
                 }
@@ -272,7 +273,7 @@ public class Game {
         for (int i = 0, j = 0; i < this.players.size(); i++) {
             for (int k = 0; k < amount + this.draw;) {
                 Card card = this.deck.get(j);
-                if ((!card.color().equals("wild") && (card.number().equals("wild") || card.number().equals("+4"))) || card.position() == 1) {
+                if ((!card.color().equals("wild") && (card.number().equals("wild") || card.number().equals("+4"))) || card.position() != 0) {
                     j++;
                     continue;
                 }

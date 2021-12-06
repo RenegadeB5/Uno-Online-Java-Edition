@@ -200,13 +200,10 @@ public class Game {
         for (String cd: cardStrings) {
             System.out.println(cd);
             String[] card = cd.split("-");
-            Card cardToSwitch = this.deck.stream()
+            this.deck.stream()
                 .filter(c -> c.position() == this.getPosition(id) && c.color().equals(card[0]) && c.number().equals(card[1]))
 			    .findFirst()
-                .get();
-            System.out.println(cardToSwitch.position());
-            cardToSwitch.position(0);
-            System.out.println(cardToSwitch.position());
+                .ifPresent(crd -> crd.position(0));
             switch (card[1]) {
                 case "+2":
                     this.draw += 2;

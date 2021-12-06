@@ -284,6 +284,7 @@ public class Game {
         if (this.draw != 0) {
             this.draw = 0;
         }
+        this.broadcastCards();
     }
 
     public void start() {

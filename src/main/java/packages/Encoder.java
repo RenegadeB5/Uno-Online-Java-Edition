@@ -25,6 +25,7 @@ public class Encoder {
 
     public ByteBuffer finish() {
         int length = this.buffer.position();
+        System.out.println(length);
         ByteBuffer buffer = ByteBuffer.allocate(length);
         this.buffer.flip();
         for (int i = 0; i < length; i++) {

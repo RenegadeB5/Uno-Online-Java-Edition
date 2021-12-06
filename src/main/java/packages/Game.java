@@ -210,6 +210,10 @@ public class Game {
             .filter(c -> c.position() == this.turn && c.color().equals(color) && c.number().equals(number))
             .findFirst()
             .ifPresent(crd -> crd.position(1));
+        if (playerCards.size() == 0) {
+            this.broadcastMessage(player.getName() + " has won!!!!!!\nThe room will close soon!");
+            this.end();
+        }
         for (String cd: cardStrings) {
             System.out.println(cd);
             String[] card = cd.split("-");
@@ -279,6 +283,7 @@ public class Game {
             this.deck.get(j).position(this.getPosition(id));
             j++;
             i++;
+            System.out.println("drew");
         }
         if (this.draw != 0) {
             this.draw = 0;

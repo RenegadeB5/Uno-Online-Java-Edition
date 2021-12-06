@@ -225,9 +225,10 @@ public class Game {
 
     private void deal(int amount) {
         for (int i = 0, j = 0; i < this.players.size(); i++) {
-            for (int k = 0; k < 7; k++) {
+            for (int k = 0; k < amount; k++) {
                 Card card = this.deck.get(j);
-                if ((!card.color().equals("wild") || !card.color().equals("+4")) && (card.number().equals("wild") || card.number().equals("+4"))) {
+                if ((card.color().equals("wild") && (!card.number().equals("wild") || !card.number().equals("+4"))) || this.top.equals(card)) {
+                    j++;
                     continue;
                 }
                 this.deck.get(j).position(i+1);

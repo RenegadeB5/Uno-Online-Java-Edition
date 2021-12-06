@@ -372,7 +372,11 @@ public class Game {
 
     public void broadcastMessage(String exclude, String sender, String message) {
         for (User user: this.players) {
-            if (!user.getID().equals(exclude)) {
+            if (user.getID().equals(exclude)) {
+                
+            }
+            else {
+                System.out.println(sender + ": " + message);
                 user.sendMessage(sender + ": " + message);
             }
         }

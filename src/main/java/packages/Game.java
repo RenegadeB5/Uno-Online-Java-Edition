@@ -155,7 +155,7 @@ public class Game {
             .filter(card -> card.position() == this.getPosition(id))
 			.collect(Collectors.toList());
         List<Card> playerCards = new ArrayList<Card>();
-        playerCards = (ArrayList)playerCardsToClone.clone();
+        for (Card crd: playerCardsToClone) playerCards.add(crd);
         Card top = new Card(this.top.color(), this.top.number());
         for (int i = 0; i < cardStrings.size(); i++) {
             String[] card = cardStrings.get(i).split("-");

@@ -204,7 +204,9 @@ public class Game {
                 .filter(c -> c.position() == this.turn && c.color().equals(card[0]) && c.number().equals(card[1]))
 			    .findFirst()
                 .get();
+            System.out.println(cardToSwitch.position());
             cardToSwitch.position(0);
+            System.out.println(cardToSwitch.position());
             switch (card[1]) {
                 case "+2":
                     this.draw += 2;

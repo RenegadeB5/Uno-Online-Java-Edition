@@ -238,7 +238,7 @@ public class Game {
         for (int i = 0, j = 0; i < this.players.size(); i++) {
             for (int k = 0; k < amount;) {
                 Card card = this.deck.get(j);
-                if ((card.color().equals("wild") && (!card.number().equals("wild") && !card.number().equals("+4"))) || card.position() == 1) {
+                if ((!card.color().equals("wild") && (card.number().equals("wild") || card.number().equals("+4"))) || card.position() == 1) {
                     j++;
                     continue;
                 }

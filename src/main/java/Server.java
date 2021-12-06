@@ -77,6 +77,9 @@ public class Server extends WebSocketServer {
 					if (gameIDs.contains(gameID)) {
 						user.sendMessage("That ID isn't available!");
 					}
+					else if (!user.getGameID().equals(null)) {
+						user.sendMessage("You are already in a game!");
+					}
 					else {
 						Game new_game = new Game(gameID, user);
 						this.games.add(new_game);
@@ -85,7 +88,7 @@ public class Server extends WebSocketServer {
 					}
 				}
 				else if (action == 1) {
-					if (gameIDs.contains(gameID)) {
+					if (gameIDs.contains(gameID) && user.getGameID().equals(null)) {
 						Game gameToJoin = this.games.stream()
 							.filter(gme -> gme.getID().equals(gameID))
 							.collect(Collectors.toList())

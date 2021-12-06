@@ -119,7 +119,6 @@ public class Game {
             if (!contains) {
                 int draw = this.draw;
                 this.draw = 0;
-                this.deal(this.players.get(this.turn-2).getID(), draw);
                 this.players.get(this.nextTurn(1)-2).sendMessage("You picked up " + draw + " cards!");
                 this.deal(this.players.get(this.nextTurn(1)-2).getID(), draw);
                 this.turn = this.nextTurn(2);

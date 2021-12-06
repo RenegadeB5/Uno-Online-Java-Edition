@@ -191,11 +191,11 @@ public class Game {
             .filter(c -> c.position() == 1)
 		    .collect(Collectors.toList())
             .get(0);
+        oldTopCard.position(0);
         Card newTopCard = this.deck.stream()
             .filter(c -> c.position() == 0 && c.color().equals(color) && c.number().equals(number))
             .collect(Collectors.toList())
             .get(0);
-        oldTopCard.position(0);
         newTopCard.position(1);
         for (String cd: cardStrings) {
             System.out.println(cd);

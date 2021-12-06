@@ -150,17 +150,16 @@ public class Game {
             player.sendMessage("The game hasn\'t started yet!");
             return;
         }
-        List<Card> playerCards = this.deck.stream()
+        List<Card> playerCardsToClone = this.deck.stream()
             .filter(card -> card.position() == this.getPosition(id))
 			.collect(Collectors.toList());
+        List<Card> playerCards = new ArrayList<Card>();
+        playerCards = (ArrayList)playerCardsToClone.clone();
         Card top = new Card(this.top.color(), this.top.number());
         for (int i = 0; i < cardStrings.size(); i++) {
             String[] card = cardStrings.get(i).split("-");
             boolean go = false;
             if ((top.color().equals(card[0]) && i == 0)) {
-                go = true;
-            }
-            if ((card[1].equals("wild") || card[1].equals("+4")) && i == 0) {
                 go = true;
             }
             if (top.number().equals(card[1])) {
@@ -172,9 +171,14 @@ public class Game {
             List<String> numbers = playerCards.stream()
                 .map(c -> c.number())
 			    .collect(Collectors.toList());
-            List<String> four = Arrays.asList("blue", "green", "yellow", "red");
-            if ((!colors.contains(card[0]) && !numbers.contains(card[1])) || !four.contains(card[0])) {
+            List<String> combo = playerCards.stream()
+                .map(c -> c.color() + "-" + c.number())
+			    .collect(Collectors.toList());
+            if (!(colors.contains(card[0]) && numbers.contains(card[1]))) {
                 go = false;
+            }
+            if ((card[1].equals("wild") || card[1].equals("+4")) && (numbers.contains(card[0]) || numbers.contains(card[1]))) {
+                go = true;
             }
             if (!go) {
                 player.sendMessage("You can't put that down!");
@@ -182,6 +186,7 @@ public class Game {
             }
             top.color(card[0]);
             top.number(card[1]);
+            playerCards.remove(combo.indexOf(card[0] + "-" + card[1]));
         }
         String color = top.color();
         String number = top.number();

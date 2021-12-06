@@ -189,21 +189,21 @@ public class Game {
         this.top.number(number);
         Card oldTopCard = this.deck.stream()
             .filter(c -> c.position() == 1)
-		    .collect(Collectors.toList())
-            .get(0);
+		    .findFirst()
+            .get();
         oldTopCard.position(0);
         Card newTopCard = this.deck.stream()
             .filter(c -> c.position() == 0 && c.color().equals(color) && c.number().equals(number))
-            .collect(Collectors.toList())
-            .get(0);
+            .findFirst()
+            .get();
         newTopCard.position(1);
         for (String cd: cardStrings) {
             System.out.println(cd);
             String[] card = cd.split("-");
             Card cardToSwitch = this.deck.stream()
                 .filter(c -> c.position() == this.turn && c.color().equals(card[0]) && c.number().equals(card[1]))
-			    .collect(Collectors.toList())
-                .get(0);
+			    .findFirst()
+                .get();
             cardToSwitch.position(0);
             switch (card[1]) {
                 case "+2":
@@ -254,7 +254,7 @@ public class Game {
         for (int i = 0, j = 0; i < this.players.size(); i++) {
             for (int k = 0; k < 7;) {
                 Card card = this.deck.get(j);
-                if ((card.color().equals("wild") && (!card.number().equals("wild") || !card.number().equals("+4"))) || card.position() == 1) {
+                if ((!card.color().equals("wild") && (card.number().equals("wild") || card.number().equals("+4"))) || card.position() == 1) {
                     j++;
                     continue;
                 }

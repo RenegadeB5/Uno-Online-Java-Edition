@@ -201,7 +201,7 @@ public class Game {
             System.out.println(cd);
             String[] card = cd.split("-");
             Card cardToSwitch = this.deck.stream()
-                .filter(c -> c.position() == this.turn && c.color().equals(card[0]) && c.number().equals(card[1]))
+                .filter(c -> c.position() == this.getPosition(id) && c.color().equals(card[0]) && c.number().equals(card[1]))
 			    .findFirst()
                 .get();
             System.out.println(cardToSwitch.position());

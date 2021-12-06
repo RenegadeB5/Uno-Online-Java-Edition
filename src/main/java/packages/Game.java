@@ -163,7 +163,7 @@ public class Game {
             if ((card[1].equals("wild") || card[1].equals("+4")) && i == 0) {
                 go = true;
             }
-            if (this.top.number().equals(card[1])) {
+            if (top.number().equals(card[1])) {
                 go = true;
             }
             List<String> colors = playerCards.stream()
@@ -198,12 +198,13 @@ public class Game {
         oldTopCard.position(0);
         newTopCard.position(1);
         for (String cd: cardStrings) {
+            System.out.println(cd);
             String[] card = cd.split("-");
             Card cardToSwitch = this.deck.stream()
-                .filter(c -> c.position() == 0 && c.color().equals(card[0]) && c.number().equals(card[1]))
+                .filter(c -> c.position() == this.turn && c.color().equals(card[0]) && c.number().equals(card[1]))
 			    .collect(Collectors.toList())
                 .get(0);
-            cardToSwitch.position(this.turn);
+            cardToSwitch.position(0);
             switch (card[1]) {
                 case "+2":
                     this.draw += 2;

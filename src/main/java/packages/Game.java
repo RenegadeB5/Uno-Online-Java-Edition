@@ -187,16 +187,14 @@ public class Game {
         String number = top.number();
         this.top.color(color);
         this.top.number(number);
-        Card oldTopCard = this.deck.stream()
+        this.deck.stream()
             .filter(c -> c.position() == 1)
 		    .findFirst()
-            .get();
-        oldTopCard.position(0);
-        Card newTopCard = this.deck.stream()
+            .ifPresent(crd -> crd.position(0));
+        this.deck.stream()
             .filter(c -> c.position() == this.turn && c.color().equals(color) && c.number().equals(number))
             .findFirst()
-            .get();
-        newTopCard.position(1);
+            .ifPresent(crd -> crd.position(1));
         for (String cd: cardStrings) {
             System.out.println(cd);
             String[] card = cd.split("-");
@@ -204,9 +202,6 @@ public class Game {
                 .filter(c -> c.position() == this.getPosition(id) && c.color().equals(card[0]) && c.number().equals(card[1]))
 			    .findFirst()
                 .ifPresent(crd -> crd.position(0));
-            System.out.println(this.deck.stream()
-            .filter(c -> c.position() == this.getPosition(id) && c.color().equals(card[0]) && c.number().equals(card[1]))
-            .findFirst().get().position());
             switch (card[1]) {
                 case "+2":
                     this.draw += 2;

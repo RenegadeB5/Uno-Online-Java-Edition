@@ -310,7 +310,6 @@ public class Game {
         enc.addInt(5);
         ByteBuffer buff = enc.finish();
         for (User user: this.players) {
-			user.setGameID(null);
             user.setReady(false);
             user.send(buff);
         }
@@ -376,7 +375,6 @@ public class Game {
                 
             }
             else {
-                System.out.println(sender + ": " + message);
                 user.sendMessage(sender + ": " + message);
             }
         }

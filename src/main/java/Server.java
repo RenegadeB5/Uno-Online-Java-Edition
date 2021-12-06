@@ -176,14 +176,11 @@ public class Server extends WebSocketServer {
 				.collect(Collectors.toList());
 			game.remove(user.getID());
 			game.broadcastMessage(user.getName() + " has left!");
-			if (game.playerCount() == 1) {
-
-			}
-			else if (game.playerCount() == 0) {
+			if (game.playerCount() == 0) {
 				int index = gameIDs.indexOf(user.getGameID());
 				this.games.remove(index);
+				this.ongoingGames -= 1;
 			}
-			this.ongoingGames -= 1;
 		}
 		int index = ids.indexOf(id);
 		this.users.remove(index);

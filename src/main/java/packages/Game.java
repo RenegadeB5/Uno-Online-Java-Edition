@@ -193,7 +193,7 @@ public class Game {
             .get();
         oldTopCard.position(0);
         Card newTopCard = this.deck.stream()
-            .filter(c -> c.position() == 0 && c.color().equals(color) && c.number().equals(number))
+            .filter(c -> c.position() == this.turn && c.color().equals(color) && c.number().equals(number))
             .findFirst()
             .get();
         newTopCard.position(1);

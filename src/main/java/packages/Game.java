@@ -99,7 +99,7 @@ public class Game {
         return turn;
     }
 
-    private void updateTurn() {
+    public void updateTurn() {
         if (this.skip != 0) {
             for (int i = 0, j = this.turn; i < this.skip; i++) {
                 this.players.get(j-2).sendMessage("You were skipped!");
@@ -212,9 +212,9 @@ public class Game {
         if (playerCards.size() == 0) {
             this.broadcastMessage(player.getName() + " has won!!!!!!\nThe room will close soon!");
             this.end();
+            return;
         }
         for (String cd: cardStrings) {
-            System.out.println(cd);
             String[] card = cd.split("-");
             this.deck.stream()
                 .filter(c -> c.position() == this.getPosition(id) && c.color().equals(card[0]) && c.number().equals(card[1]))
@@ -255,6 +255,7 @@ public class Game {
                 }
             }
         }
+        this.broadcastCards();
     }
 
     private void deal(int amount) {
@@ -282,7 +283,6 @@ public class Game {
             this.deck.get(j).position(this.getPosition(id));
             j++;
             i++;
-            System.out.println("drew");
         }
         if (this.draw != 0) {
             this.draw = 0;
@@ -306,9 +306,13 @@ public class Game {
 
     public void end() {
         this.broadcastMessage("The game has ended!");
+        Encoder enc = new Encoder();
+        enc.addInt(5);
+        ByteBuffer buff = enc.finish();
         for (User user: this.players) {
 			user.setGameID(null);
             user.setReady(false);
+            user.send(buff);
         }
     }
 
@@ -326,7 +330,6 @@ public class Game {
                 .filter(card -> card.position() == index+2)
                 .collect(Collectors.toList());
             encoder.addInt(playerCards.size());
-            System.out.println(playerCards.size());
             for (Card c: playerCards) {
                 encoder.addString(c.color() + "-" + c.number());
             }
@@ -347,12 +350,18 @@ public class Game {
     }
 
     public void broadcastUsers() {
+        Encoder enc = new Encoder();
+        enc.addInt(6);
         StringBuilder str = new StringBuilder();
         str.append("Current users:\n");
         for (User user: this.players) {
             str.append(user.getName() + ": " + (user.isReady() ? "ready" : "not ready") + "\n");
         }
-        this.broadcastMessage(str.toString());
+        enc.addString(str.toString());
+        ByteBuffer buff = enc.finish();
+        for (User user: this.players) {
+            user.send(buff);
+        }
     }
 
     public void broadcastMessage(String message) {
@@ -361,10 +370,10 @@ public class Game {
         }
     }
 
-    public void broadcastMessage(String exclude, String message) {
+    public void broadcastMessage(String exclude, String sender, String message) {
         for (User user: this.players) {
             if (!user.getID().equals(id)) {
-                user.sendMessage(message);
+                user.sendMessage(sender + ": " + message);
             }
         }
     }

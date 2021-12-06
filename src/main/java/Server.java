@@ -102,7 +102,7 @@ public class Server extends WebSocketServer {
 			case 3:
 				if (game != null) {
 					String message = decoder.getString();
-					game.broadcastMessage(ID, message);
+					game.broadcastMessage(ID, user.getName(), message);
 				}
 				break;
 			case 4:
@@ -113,6 +113,7 @@ public class Server extends WebSocketServer {
 						String card = decoder.getString();
 						if (card.equals("draw")) {
 							game.deal(user.getID(), 1);
+							game.updateTurn();
 							return;
 						} 
 						else {

@@ -79,7 +79,7 @@ public class Game {
         List<String> userIds = this.players.stream()
             .map(user -> user.getID())
 			.collect(Collectors.toList());
-        return userIds.indexOf(id) + 2;
+        return (userIds.indexOf(id) + 2);
     }
 
     private int nextTurn(int n) {
@@ -204,6 +204,9 @@ public class Game {
                 .filter(c -> c.position() == this.getPosition(id) && c.color().equals(card[0]) && c.number().equals(card[1]))
 			    .findFirst()
                 .ifPresent(crd -> crd.position(0));
+            System.out.println(this.deck.stream()
+            .filter(c -> c.position() == this.getPosition(id) && c.color().equals(card[0]) && c.number().equals(card[1]))
+            .findFirst().get().position());
             switch (card[1]) {
                 case "+2":
                     this.draw += 2;

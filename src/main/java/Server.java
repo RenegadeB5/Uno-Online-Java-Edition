@@ -160,6 +160,7 @@ public class Server extends WebSocketServer {
 		if (type != 1 && user.getName() == null) {
 			return;
 		}
+		System.out.println(this.functions.get(type));
 		this.functions.get(type).execute(decoder, ID, user, gameIDs, game, this.games);
 	}
 	

@@ -328,6 +328,7 @@ public class Game {
             List<Card> playerCards = this.deck.stream()
                 .filter(card -> card.position() == index+2)
                 .collect(Collectors.toList());
+            Collections.sort(playerCards);
             encoder.addInt(playerCards.size());
             for (Card c: playerCards) {
                 encoder.addString(c.color() + "-" + c.number());

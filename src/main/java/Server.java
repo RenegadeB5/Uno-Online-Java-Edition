@@ -11,11 +11,16 @@ import java.lang.*;
 import java.util.stream.*;
 import packages.*;
 
+interface Worker {
+	void execute(Decoder decoder, String ID, User user, List<String> gameIDs, Game game, ArrayList<Game> games);
+}
+
 public class Server extends WebSocketServer {
 	private int connections;
 	private int ongoingGames;
 	private ArrayList<User> users;
 	private ArrayList<Game> games;
+	private Map<Integer, Worker> functions;
 
 	public static void main(String[] args) throws InterruptedException, IOException {
 		Server server = new Server(Integer.parseInt(System.getenv("PORT")));
@@ -29,6 +34,101 @@ public class Server extends WebSocketServer {
 		this.ongoingGames = 0;
 		this.users = new ArrayList<User>();
 		this.games = new ArrayList<Game>();
+		this.functions = new HashMap<Integer, Worker>();
+		Worker func1 = new Worker() {
+			public void execute(Decoder decoder, String ID, User user, List<String> gameIDs, Game game, ArrayList<Game> games) {
+				user.setName(decoder.getString());
+			}
+		};
+		Worker func2 = new Worker() {
+			public void execute(Decoder decoder, String ID, User user, List<String> gameIDs, Game game, ArrayList<Game> games) {
+				int action = decoder.getInt();
+				String gameID = decoder.getString();
+				if (action == 0) {
+					if (gameIDs.contains(gameID)) {
+						user.sendMessage("That ID isn't available!");
+					}
+					else if (user.getGameID() != null) {
+						user.sendMessage("You are already in a game!");
+					}
+					else {
+						Game new_game = new Game(gameID, user);
+						games.add(new_game);
+						user.setGameID(gameID);
+						user.sendMessage("Game successfully created");
+					}
+				}
+				else if (action == 1) {
+					if (gameIDs.contains(gameID) && user.getGameID() == null) {
+						Game gameToJoin = games.stream()
+							.filter(gme -> gme.getID().equals(gameID))
+							.collect(Collectors.toList())
+							.get(0);
+						gameToJoin.addUser(user);
+						user.setGameID(gameID);
+						gameToJoin.broadcastUsers();
+					}
+					else {
+						user.sendMessage("That game ID doesn\'t exist!");
+					}
+				}
+				else {
+					System.out.println("The server got a message it doesn't know about: header 2");
+				}
+			}
+		};
+		Worker func3 = new Worker() {
+			public void execute(Decoder decoder, String ID, User user, List<String> gameIDs, Game game, ArrayList<Game> games) {
+				if (game != null) {
+					String message = decoder.getString();
+					game.broadcastMessage(ID, user.getName(), message);
+				}
+			}
+		};
+		Worker func4 = new Worker() {
+			public void execute(Decoder decoder, String ID, User user, List<String> gameIDs, Game game, ArrayList<Game> games) {
+				if (game != null) {
+					List<String> cards = new ArrayList<String>();
+					int amount = decoder.getInt();
+					for (int i = 0; i < amount; i++) {
+						String card = decoder.getString();
+						if (card.equals("draw")) {
+							game.deal(user.getID(), 1);
+							game.updateTurn();
+							return;
+						} 
+						else {
+							cards.add(card);
+						}
+					}
+					game.play(ID, cards);
+				}
+			}
+		};
+		Worker func5 = new Worker() {
+			public void execute(Decoder decoder, String ID, User user, List<String> gameIDs, Game game, ArrayList<Game> games) {
+				if (game != null) {
+					user.setReady(true);
+					game.broadcastUsers();
+					game.start();
+				}
+			}
+		};
+		Worker func6 = new Worker() {
+			public void execute(Decoder decoder, String ID, User user, List<String> gameIDs, Game game, ArrayList<Game> games) {
+				if (game != null) {
+					game.remove(ID);
+					user.setGameID(null);
+					user.setReady(false);
+				}
+			}
+		};
+		this.functions.put(1, func1);
+		this.functions.put(2, func2);
+		this.functions.put(3, func3);
+		this.functions.put(4, func4);
+		this.functions.put(5, func5);
+		this.functions.put(6, func6);
 	}
 
 	@Override
@@ -60,84 +160,7 @@ public class Server extends WebSocketServer {
 		if (type != 1 && user.getName() == null) {
 			return;
 		}
-		switch (type) {
-			case 1:
-				user.setName(decoder.getString());
-				break;
-			case 2:
-				int action = decoder.getInt();
-				String gameID = decoder.getString();
-				if (action == 0) {
-					if (gameIDs.contains(gameID)) {
-						user.sendMessage("That ID isn't available!");
-					}
-					else if (user.getGameID() != null) {
-						user.sendMessage("You are already in a game!");
-					}
-					else {
-						Game new_game = new Game(gameID, user);
-						this.games.add(new_game);
-						user.setGameID(gameID);
-						user.sendMessage("Game successfully created");
-					}
-				}
-				else if (action == 1) {
-					if (gameIDs.contains(gameID) && user.getGameID() == null) {
-						Game gameToJoin = this.games.stream()
-							.filter(gme -> gme.getID().equals(gameID))
-							.collect(Collectors.toList())
-							.get(0);
-						gameToJoin.addUser(user);
-						user.setGameID(gameID);
-						gameToJoin.broadcastUsers();
-					}
-					else {
-						user.sendMessage("That game ID doesn\'t exist!");
-					}
-				}
-				else {
-					System.out.println("The server got a message it doesn't know about: header 2");
-				}
-				break;
-			case 3:
-				if (game != null) {
-					String message = decoder.getString();
-					game.broadcastMessage(ID, user.getName(), message);
-				}
-				break;
-			case 4:
-				if (game != null) {
-					List<String> cards = new ArrayList<String>();
-					int amount = decoder.getInt();
-					for (int i = 0; i < amount; i++) {
-						String card = decoder.getString();
-						if (card.equals("draw")) {
-							game.deal(user.getID(), 1);
-							game.updateTurn();
-							return;
-						} 
-						else {
-							cards.add(card);
-						}
-					}
-					game.play(ID, cards);
-				}
-				break;
-			case 5:
-				if (game != null) {
-					user.setReady(true);
-					game.broadcastUsers();
-					game.start();
-				}
-				break;
-			case 6:
-				if (game != null) {
-					game.remove(ID);
-					user.setGameID(null);
-					user.setReady(false);
-				}
-				break;
-		}
+		this.functions.get(type).execute(decoder, ID, user, gameIDs, game, this.games);
 	}
 	
 	@Override

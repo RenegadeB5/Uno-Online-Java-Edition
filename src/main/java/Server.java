@@ -35,6 +35,8 @@ public class Server extends WebSocketServer {
 		this.users = new ArrayList<User>();
 		this.games = new ArrayList<Game>();
 		this.functions = new HashMap<Integer, Worker>();
+
+
 		Worker func1 = new Worker() {
 			public void execute(Decoder decoder, String ID, User user, List<String> gameIDs, Game game, ArrayList<Game> games) {
 				user.setName(decoder.getString());
@@ -161,7 +163,7 @@ public class Server extends WebSocketServer {
 			return;
 		}
 		System.out.println(type);
-		this.functions.get(type).execute(decoder, ID, user, gameIDs, game, this.games);
+		if (type != 0) this.functions.get(type).execute(decoder, ID, user, gameIDs, game, this.games);
 	}
 	
 	@Override

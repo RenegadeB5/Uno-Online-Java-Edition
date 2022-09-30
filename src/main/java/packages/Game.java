@@ -328,7 +328,7 @@ public class Game {
             List<Card> playerCards = this.deck.stream()
                 .filter(card -> card.position() == index+2)
                 .collect(Collectors.toList());
-            Collections.sort(playerCards, (Card c1, Card c2) -> (c1.color()).compareTo(c2.color()));
+            Collections.sort(playerCards, (Card c1, Card c2) -> (c1.stringify()).compareTo(c2.stringify()));
             encoder.addInt(playerCards.size());
             for (Card c: playerCards) {
                 encoder.addString(c.color() + "-" + c.number());

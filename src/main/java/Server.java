@@ -60,7 +60,7 @@ public class Server extends WebSocketServer {
 						games.add(new_game);
 						user.setGame(new_game);
 						user.sendMessage("Game successfully created");
-						this.updateGameIDs();
+						Server.updateGameIDs();
 					}
 				}
 				else if (action == 1) {
@@ -123,7 +123,7 @@ public class Server extends WebSocketServer {
 			public void execute(Decoder decoder, String ID, User user, List<String> gameIDs, Game game, ArrayList<Game> games) {
 				if (game != null) {
 					game.remove(ID);
-					user.setGameID(null);
+					user.setGame(null);
 					user.setReady(false);
 				}
 			}
@@ -192,7 +192,7 @@ public class Server extends WebSocketServer {
 			game.remove(user.getID());
 			game.broadcastMessage(user.getName() + " has left!");
 			if (game.playerCount() == 0) {
-				int index = gameIDs.indexOf(user.getGameID());
+				int index = gameIDs.indexOf(user.getGame().getID());
 				this.games.remove(index);
 				this.ongoingGames -= 1;
 				this.updateGameIDs();
@@ -206,8 +206,7 @@ public class Server extends WebSocketServer {
 	public User getUser(String id) {
 		User user = this.users.stream()
 			.filter(usr -> usr.getID().equals(id))
-			.collect(Collectors.toList())
-			.get(0)
+			.findFirst()
 			.orElse(null);
 		return user;
 	}
@@ -215,7 +214,6 @@ public class Server extends WebSocketServer {
 	public void updateGameIDs() {
 		this.gameIDs = this.games.stream()
 			.map(gme -> gme.getID())
-			.collect(Collectors.toList())
-			.orElse(null);
+			.collect(Collectors.toList());
 	}
 }

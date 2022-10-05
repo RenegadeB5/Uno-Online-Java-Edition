@@ -12,7 +12,7 @@ import java.util.stream.*;
 import packages.*;
 
 interface Worker {
-	void execute(Decoder decoder, String ID, User user, List<String> gameIDs, Game game, ArrayList<Game> games);
+	void execute(Decoder decoder, String ID, User user, List<String> gameIDs, Game game, ArrayList<Game> games, Server server);
 }
 
 public class Server extends WebSocketServer {
@@ -21,7 +21,7 @@ public class Server extends WebSocketServer {
 	private ArrayList<User> users;
 	private ArrayList<Game> games;
 	private Map<Integer, Worker> functions;
-	private ArrayList<String> gameIDs;
+	private List<String> gameIDs;
 
 	public static void main(String[] args) throws InterruptedException, IOException {
 		Server server = new Server(Integer.parseInt(System.getenv("PORT")));
@@ -36,16 +36,16 @@ public class Server extends WebSocketServer {
 		this.users = new ArrayList<User>();
 		this.games = new ArrayList<Game>();
 		this.functions = new HashMap<Integer, Worker>();
-		this.gameIDs = new ArrayList<String>();
+		this.gameIDs = new List<String>();
 
 
 		Worker func1 = new Worker() {
-			public void execute(Decoder decoder, String ID, User user, List<String> gameIDs, Game game, ArrayList<Game> games) {
+			public void execute(Decoder decoder, String ID, User user, List<String> gameIDs, Game game, ArrayList<Game> games, Server server) {
 				user.setName(decoder.getString());
 			}
 		};
 		Worker func2 = new Worker() {
-			public void execute(Decoder decoder, String ID, User user, List<String> gameIDs, Game game, ArrayList<Game> games) {
+			public void execute(Decoder decoder, String ID, User user, List<String> gameIDs, Game game, ArrayList<Game> games, Server server) {
 				int action = decoder.getInt();
 				String gameID = decoder.getString();
 				if (action == 0) {
@@ -60,7 +60,7 @@ public class Server extends WebSocketServer {
 						games.add(new_game);
 						user.setGame(new_game);
 						user.sendMessage("Game successfully created");
-						Server.updateGameIDs();
+						server.updateGameIDs();
 					}
 				}
 				else if (action == 1) {
@@ -83,7 +83,7 @@ public class Server extends WebSocketServer {
 			}
 		};
 		Worker func3 = new Worker() {
-			public void execute(Decoder decoder, String ID, User user, List<String> gameIDs, Game game, ArrayList<Game> games) {
+			public void execute(Decoder decoder, String ID, User user, List<String> gameIDs, Game game, ArrayList<Game> games, Server server) {
 				if (game != null) {
 					String message = decoder.getString();
 					game.broadcastMessage(ID, user.getName(), message);
@@ -91,7 +91,7 @@ public class Server extends WebSocketServer {
 			}
 		};
 		Worker func4 = new Worker() {
-			public void execute(Decoder decoder, String ID, User user, List<String> gameIDs, Game game, ArrayList<Game> games) {
+			public void execute(Decoder decoder, String ID, User user, List<String> gameIDs, Game game, ArrayList<Game> games, Server server) {
 				if (game != null) {
 					List<String> cards = new ArrayList<String>();
 					int amount = decoder.getInt();
@@ -111,7 +111,7 @@ public class Server extends WebSocketServer {
 			}
 		};
 		Worker func5 = new Worker() {
-			public void execute(Decoder decoder, String ID, User user, List<String> gameIDs, Game game, ArrayList<Game> games) {
+			public void execute(Decoder decoder, String ID, User user, List<String> gameIDs, Game game, ArrayList<Game> games, Server server) {
 				if (game != null) {
 					user.setReady(true);
 					game.broadcastUsers();
@@ -120,7 +120,7 @@ public class Server extends WebSocketServer {
 			}
 		};
 		Worker func6 = new Worker() {
-			public void execute(Decoder decoder, String ID, User user, List<String> gameIDs, Game game, ArrayList<Game> games) {
+			public void execute(Decoder decoder, String ID, User user, List<String> gameIDs, Game game, ArrayList<Game> games, Server server) {
 				if (game != null) {
 					game.remove(ID);
 					user.setGame(null);
@@ -160,7 +160,7 @@ public class Server extends WebSocketServer {
 		if (type != 1 && user.getName() == null) {
 			return;
 		}
-		if (type != 0) this.functions.get(type).execute(decoder, id, user, gameIDs, game, this.games);
+		if (type != 0) this.functions.get(type).execute(decoder, id, user, gameIDs, game, this.games, this);
 	}
 	
 	@Override

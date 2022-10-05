@@ -36,7 +36,7 @@ public class Server extends WebSocketServer {
 		this.users = new ArrayList<User>();
 		this.games = new ArrayList<Game>();
 		this.functions = new HashMap<Integer, Worker>();
-		this.gameIDs = new List<String>();
+		this.gameIDs = new ArrayList<String>();
 
 
 		Worker func1 = new Worker() {

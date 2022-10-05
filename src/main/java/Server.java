@@ -21,6 +21,7 @@ public class Server extends WebSocketServer {
 	private ArrayList<User> users;
 	private ArrayList<Game> games;
 	private Map<Integer, Worker> functions;
+	private ArrayList<String> gameIDs;
 
 	public static void main(String[] args) throws InterruptedException, IOException {
 		Server server = new Server(Integer.parseInt(System.getenv("PORT")));

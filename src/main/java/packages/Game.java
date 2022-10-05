@@ -209,11 +209,6 @@ public class Game {
             .filter(c -> c.position() == this.turn && c.color().equals(color) && c.number().equals(number))
             .findFirst()
             .ifPresent(crd -> crd.position(1));
-        if (playerCards.size() == 0) {
-            this.broadcastMessage(player.getName() + " has won!!!!!!\nThe room will close soon!");
-            this.end();
-            return;
-        }
         for (String cd: cardStrings) {
             String[] card = cd.split("-");
             this.deck.stream()
@@ -240,6 +235,12 @@ public class Game {
                     this.switchDirection();
                     break;
             }
+        }
+        if (playerCards.size() == 0) {
+            this.broadcastMessage(player.getName() + " has won!!!!!!\nThe room will close soon!");
+            this.broadcastCards();
+            this.end();
+            return;
         }
         this.shuffle();
         this.updateTurn();

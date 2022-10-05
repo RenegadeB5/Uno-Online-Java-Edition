@@ -35,6 +35,7 @@ public class Server extends WebSocketServer {
 		this.users = new ArrayList<User>();
 		this.games = new ArrayList<Game>();
 		this.functions = new HashMap<Integer, Worker>();
+		this.gameIDs = new ArrayList<String>;
 
 
 		Worker func1 = new Worker() {
@@ -50,24 +51,25 @@ public class Server extends WebSocketServer {
 					if (gameIDs.contains(gameID)) {
 						user.sendMessage("That ID isn't available!");
 					}
-					else if (user.getGameID() != null) {
+					else if (user.getGame() != null) {
 						user.sendMessage("You are already in a game!");
 					}
 					else {
 						Game new_game = new Game(gameID, user);
 						games.add(new_game);
-						user.setGameID(gameID);
+						user.setGame(new_game);
 						user.sendMessage("Game successfully created");
+						this.updateGameIDs();
 					}
 				}
 				else if (action == 1) {
-					if (gameIDs.contains(gameID) && user.getGameID() == null) {
+					if (gameIDs.contains(gameID) && user.getGame() == null) {
 						Game gameToJoin = games.stream()
 							.filter(gme -> gme.getID().equals(gameID))
 							.collect(Collectors.toList())
 							.get(0);
 						gameToJoin.addUser(user);
-						user.setGameID(gameID);
+						user.setGame(gameToJoin);
 						gameToJoin.broadcastUsers();
 					}
 					else {
@@ -150,20 +152,14 @@ public class Server extends WebSocketServer {
 	public void onMessage(WebSocket ws, ByteBuffer packet) {
 		Decoder decoder = new Decoder(packet);
 		int type = decoder.getInt();
-		String ID = ""+ws;
-		User user = this.users.stream()
-			.filter(usr -> usr.getID().equals(ID))
-			.collect(Collectors.toList())
-			.get(0);
-		List<String> gameIDs = (this.games.size() == 0) ? Arrays.asList("") : this.games.stream()
-			.map(game -> game.getID())
-			.collect(Collectors.toList());
-		Game game = (user.getGameID() != null) ? this.games.get(gameIDs.indexOf(user.getGameID())) : null;
+		String id = ""+ws;
+		User user = this.getUser(id);
+		List<String> gameIDs = this.gameIDs;
+		Game game = user.getGame();
 		if (type != 1 && user.getName() == null) {
 			return;
 		}
-		System.out.println(type);
-		if (type != 0) this.functions.get(type).execute(decoder, ID, user, gameIDs, game, this.games);
+		if (type != 0) this.functions.get(type).execute(decoder, id, user, gameIDs, game, this.games);
 	}
 	
 	@Override
@@ -188,28 +184,37 @@ public class Server extends WebSocketServer {
 		List<String> ids = this.users.stream()
 			.map(usr -> usr.getID())
 			.collect(Collectors.toList());
-		User user = this.users.stream()
-			.filter(usr -> usr.getID().equals(id))
-			.collect(Collectors.toList())
-			.get(0);
-		if (user.getGameID() != null) {
-			Game game = this.games.stream()
-				.filter(gme -> gme.getID().equals(user.getGameID()))
-				.collect(Collectors.toList())
-				.get(0);
-			List<String> gameIDs = this.games.stream()
-				.map(gme -> gme.getID())
-				.collect(Collectors.toList());
+		User user = this.getUser(id);
+		if (user.getGame() != null) {
+			Game game = user.getGame();
+			List<String> gameIDs = this.gameIDs;
 			game.remove(user.getID());
 			game.broadcastMessage(user.getName() + " has left!");
 			if (game.playerCount() == 0) {
 				int index = gameIDs.indexOf(user.getGameID());
 				this.games.remove(index);
 				this.ongoingGames -= 1;
+				this.updateGameIDs();
 			}
 		}
 		int index = ids.indexOf(id);
 		this.users.remove(index);
 		this.connections -= 1;
+	}
+
+	public User getUser(String id) {
+		User user = this.users.stream()
+			.filter(usr -> usr.getID().equals(id))
+			.collect(Collectors.toList())
+			.get(0)
+			.orElse(null);
+		return user;
+	}
+
+	public void updateGameIDs() {
+		this.gameIDs = this.games.stream()
+			.map(gme -> gme.getID())
+			.collect(Collectors.toList())
+			.orElse(null);
 	}
 }

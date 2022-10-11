@@ -59,7 +59,7 @@ public class UnoGame extends Game {
     }
 
     private int nextTurn(int n) {
-        int turn = this.turn;
+        int turn = super.turn;
         for (int i = 0; i < n; i++) {
             if (turn == super.players.size()+1 && this.direction == 1) {
                 turn = 2;
@@ -74,13 +74,17 @@ public class UnoGame extends Game {
         return turn;
     }
 
+    private void switchDirection() {
+        this.direction *= -1;
+    }
+
     public void updateTurn() {
         if (this.skip != 0) {
-            for (int i = 0, j = this.turn; i < this.skip; i++) {
+            for (int i = 0, j = super.turn; i < this.skip; i++) {
                 super.players.get(j-2).sendMessage("You were skipped!");
                 j = this.nextTurn(1);
             }
-            this.turn = this.nextTurn(1 + this.skip);
+            super.turn = this.nextTurn(1 + this.skip);
             this.skip = 0;
         }
         else if (this.draw != 0) {
@@ -96,14 +100,14 @@ public class UnoGame extends Game {
                 this.draw = 0;
                 super.players.get(this.nextTurn(1)-2).sendMessage("You picked up " + draw + " cards!");
                 this.deal(super.players.get(this.nextTurn(1)-2).getID(), draw);
-                this.turn = this.nextTurn(2);
+                super.turn = this.nextTurn(2);
             }
         }
         else {
-            this.turn = this.nextTurn(1);
+            super.turn = this.nextTurn(1);
         }
         this.broadcastCards();
-        super.players.get(this.turn-2).sendMessage("It's your turn!");
+        super.players.get(super.turn-2).sendMessage("It's your turn!");
     }
 
     public void shuffle() {
@@ -115,11 +119,11 @@ public class UnoGame extends Game {
             .filter(user -> user.getID().equals(id))
 			.collect(Collectors.toList())
             .get(0);
-        if (!super.players.get(this.turn-2).getID().equals(id)) {
+        if (!super.players.get(super.turn-2).getID().equals(id)) {
             player.sendMessage("It isn't your turn!");
             return;
         }
-        if (!this.ongoing) {
+        if (!super.ongoing) {
             player.sendMessage("The game hasn\'t started yet!");
             return;
         }
@@ -177,7 +181,7 @@ public class UnoGame extends Game {
 		    .findFirst()
             .ifPresent(crd -> crd.position(0));
         this.deck.stream()
-            .filter(c -> c.position() == this.turn && c.color().equals(color) && c.number().equals(number))
+            .filter(c -> c.position() == super.turn && c.color().equals(color) && c.number().equals(number))
             .findFirst()
             .ifPresent(crd -> crd.position(1));
         for (String cd: cardStrings) {
@@ -188,7 +192,7 @@ public class UnoGame extends Game {
                 .ifPresent(crd -> crd.position(0));
             if (card[1].equals("wild") || card[1].equals("+4")) {
                 this.deck.stream()
-                    .filter(c -> c.position() == this.turn && c.number().equals(card[1]))
+                    .filter(c -> c.position() == super.turn && c.number().equals(card[1]))
 			        .findFirst()
                     .ifPresent(crd -> crd.position(0));
             }
@@ -208,7 +212,7 @@ public class UnoGame extends Game {
             }
         }
         if (playerCards.size() == 0) {
-            this.broadcastMessage(player.getName() + " has won!!!!!!\nThe room will close soon!");
+            super.broadcastMessage(player.getName() + " has won!!!!!!\nThe room will close soon!");
             this.broadcastCards();
             this.end();
             return;
@@ -259,7 +263,7 @@ public class UnoGame extends Game {
         if (ready) {
             this.deal(7);
             this.broadcastCards();
-            this.ongoing = true;
+            super.ongoing = true;
         }
     }
 
@@ -270,7 +274,7 @@ public class UnoGame extends Game {
             Encoder encoder = new Encoder();
             encoder.addInt(4);
             encoder.addInt(this.direction);
-            encoder.addString(super.players.get(this.turn-2).getID());
+            encoder.addString(super.players.get(super.turn-2).getID());
             encoder.addString(super.players.get(this.nextTurn(1) - 2).getID());
             encoder.addString(this.top.color() + "-" + this.top.number());
             List<Card> playerCards = this.deck.stream()

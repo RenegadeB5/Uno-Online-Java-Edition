@@ -47,7 +47,7 @@ public class Server extends WebSocketServer {
 		Worker func2 = new Worker() {
 			public void execute(Decoder decoder, String ID, User user, List<String> gameIDs, Game game, ArrayList<Game> games, Server server) {
 				int action = decoder.getInt();
-				int game = decoder.getInt();
+				int gameNum = decoder.getInt();
 				String gameID = decoder.getString();
 				if (action == 0) {
 					if (gameIDs.contains(gameID)) {
@@ -57,7 +57,7 @@ public class Server extends WebSocketServer {
 						user.sendMessage("You are already in a game!");
 					}
 					else {
-						Game new_game = new UnoGame(gameID, user);
+						UnoGame new_game = new UnoGame(gameID, user);
 						games.add(new_game);
 						user.setGame(new_game);
 						user.sendMessage("Game successfully created");

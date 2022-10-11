@@ -7,7 +7,7 @@ import java.io.*;
 import java.util.stream.*;
 import java.util.ArrayList;
 
-public class Game {
+public abstract class Game {
     private String id;
     protected ArrayList<User> players;
     protected boolean ongoing;

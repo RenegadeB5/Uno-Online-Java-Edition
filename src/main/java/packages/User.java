@@ -2,21 +2,19 @@ package packages;
 import java.nio.ByteBuffer;
 import org.java_websocket.WebSocket;
 
-interface GameType <T> {
-	public static T gameObj = null;
-}
-
 public class User {
 	private String id;
 	private String name;
-	private GameType game;
+	private String gameID;
+	private int gameNum;
 	private boolean ready;
 	private WebSocket ws;
 
 	public User(String id, WebSocket ws) {
 		this.id = id;
 		this.name = null;
-		this.game = null;
+		this.gameID = null;
+		this.gameNum = null;
 		this.ready = false;
 		this.ws = ws;
 	}
@@ -32,14 +30,23 @@ public class User {
 	public void setName(String name) {
 		this.name = name;
 	}
-	
-	public void setGame(GameType game) {
-		this.game = game.gameObj;
+
+	public String getGameID() {
+		return this.gameID;
 	}
-	
-	public GameType getGame() {
-		return this.game.gameObj;
+
+	public void setGameID(String name) {
+		this.gameID = gameID;
 	}
+
+	public int getGameNum() {
+		return this.gameNum;
+	}
+
+	public void setGameNum(int gameNum) {
+		this.gameNum = gameNum;
+	}
+
 
 	public void send(ByteBuffer s) {
 		try {

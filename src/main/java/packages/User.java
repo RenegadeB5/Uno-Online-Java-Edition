@@ -3,7 +3,7 @@ import java.nio.ByteBuffer;
 import org.java_websocket.WebSocket;
 
 interface GameType <T> {
-	T gameObj = null;
+	public static T gameObj = null;
 }
 
 public class User {

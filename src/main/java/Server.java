@@ -16,7 +16,7 @@ interface Worker {
 }
 
 interface GameType <T> {
-	T gameObj = null;
+	public static T gameObj = null;
 }
 
 public class Server extends WebSocketServer {

@@ -35,7 +35,7 @@ public class User {
 		return this.gameID;
 	}
 
-	public void setGameID(String name) {
+	public void setGameID(String gameID) {
 		this.gameID = gameID;
 	}
 

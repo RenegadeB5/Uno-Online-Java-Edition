@@ -114,9 +114,7 @@ public class Server extends WebSocketServer {
 		};
 		Worker func5 = new Worker() {
 			public void execute(Decoder decoder, String ID, User user, List<String> gameIDs, ArrayList<Game> games, Server server) {
-				System.out.println(user.getGameID());
 				if (user.getGameID() != null) {
-					System.out.println(user.getGameNum());
 					if (user.getGameNum() == 1) {
 						UnoGame game = (UnoGame)server.games.get(gameIDs.indexOf(user.getGameID()));
 						user.setReady(true);

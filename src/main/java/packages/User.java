@@ -14,7 +14,7 @@ public class User {
 		this.id = id;
 		this.name = null;
 		this.gameID = null;
-		this.gameNum = null;
+		this.gameNum = 0;
 		this.ready = false;
 		this.ws = ws;
 	}

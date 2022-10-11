@@ -12,7 +12,7 @@ import java.util.stream.*;
 import packages.*;
 
 interface Worker {
-	void execute(Decoder decoder, String ID, User user, List<String> gameIDs, Game game, ArrayList<Game> games, Server server);
+	void execute(Decoder decoder, String ID, User user, List<String> gameIDs, ArrayList<Game> games, Server server);
 }
 
 public class Server extends WebSocketServer {
@@ -40,12 +40,12 @@ public class Server extends WebSocketServer {
 
 
 		Worker func1 = new Worker() {
-			public void execute(Decoder decoder, String ID, User user, List<String> gameIDs, Game game, ArrayList<Game> games, Server server) {
+			public void execute(Decoder decoder, String ID, User user, List<String> gameIDs, ArrayList<Game> games, Server server) {
 				user.setName(decoder.getString());
 			}
 		};
 		Worker func2 = new Worker() {
-			public void execute(Decoder decoder, String ID, User user, List<String> gameIDs, Game game, ArrayList<Game> games, Server server) {
+			public void execute(Decoder decoder, String ID, User user, List<String> gameIDs, ArrayList<Game> games, Server server) {
 				int action = decoder.getInt();
 				int gameNum = decoder.getInt();
 				String gameID = decoder.getString();
@@ -66,13 +66,7 @@ public class Server extends WebSocketServer {
 				}
 				else if (action == 1) {
 					if (gameIDs.contains(gameID) && user.getGame() == null) {
-						Game gameToJoin = games.stream()
-							.filter(gme -> gme.getID().equals(gameID))
-							.collect(Collectors.toList())
-							.get(0);
-						gameToJoin.addUser(user);
-						user.setGame(gameToJoin);
-						gameToJoin.broadcastUsers();
+						this.games.get(gameIDs.indexOf(gameID)).addUser(user);
 					}
 					else {
 						user.sendMessage("That game ID doesn\'t exist!");
@@ -84,46 +78,50 @@ public class Server extends WebSocketServer {
 			}
 		};
 		Worker func3 = new Worker() {
-			public void execute(Decoder decoder, String ID, User user, List<String> gameIDs, Game game, ArrayList<Game> games, Server server) {
-				if (game != null) {
+			public void execute(Decoder decoder, String ID, User user, List<String> gameIDs, ArrayList<Game> games, Server server) {
+				if (user.getGame() != null) {
 					String message = decoder.getString();
-					game.broadcastMessage(ID, user.getName(), message);
+					user.getGame().broadcastMessage(ID, user.getName(), message);
 				}
 			}
 		};
 		Worker func4 = new Worker() {
-			public void execute(Decoder decoder, String ID, User user, List<String> gameIDs, Game game, ArrayList<Game> games, Server server) {
-				if (game != null) {
+			public void execute(Decoder decoder, String ID, User user, List<String> gameIDs, ArrayList<Game> games, Server server) {
+				if (user.getGame() != null) {
 					List<String> cards = new ArrayList<String>();
-					int amount = decoder.getInt();
-					for (int i = 0; i < amount; i++) {
-						String card = decoder.getString();
-						if (card.equals("draw")) {
-							game.deal(user.getID(), 1);
-							game.updateTurn();
-							return;
-						} 
-						else {
-							cards.add(card);
+					int gameNum = decoder.getInt();
+					if (gameNum == 0) {
+						int amount = decoder.getInt();
+						for (int i = 0; i < amount; i++) {
+							UnoGame game = user.getGame();
+							String card = decoder.getString();
+							if (card.equals("draw")) {
+								game.deal(user.getID(), 1);
+								game.updateTurn();
+								return;
+							} 
+							else {
+								cards.add(card);
+							}
 						}
+						game.play(ID, cards);
 					}
-					game.play(ID, cards);
 				}
 			}
 		};
 		Worker func5 = new Worker() {
-			public void execute(Decoder decoder, String ID, User user, List<String> gameIDs, Game game, ArrayList<Game> games, Server server) {
-				if (game != null) {
+			public void execute(Decoder decoder, String ID, User user, List<String> gameIDs, ArrayList<Game> games, Server server) {
+				if (user.getGame() != null) {
 					user.setReady(true);
-					game.broadcastUsers();
-					game.start();
+					user.getGame().broadcastUsers();
+					user.getGame().start();
 				}
 			}
 		};
 		Worker func6 = new Worker() {
-			public void execute(Decoder decoder, String ID, User user, List<String> gameIDs, Game game, ArrayList<Game> games, Server server) {
-				if (game != null) {
-					game.remove(ID);
+			public void execute(Decoder decoder, String ID, User user, List<String> gameIDs, ArrayList<Game> games, Server server) {
+				if (user.getGame() != null) {
+					user.getGame().remove(ID);
 					user.setGame(null);
 					user.setReady(false);
 				}
@@ -157,11 +155,10 @@ public class Server extends WebSocketServer {
 		String id = ""+ws;
 		User user = this.getUser(id);
 		List<String> gameIDs = this.gameIDs;
-		Game game = user.getGame();
 		if (type != 1 && user.getName() == null) {
 			return;
 		}
-		if (type != 0) this.functions.get(type).execute(decoder, id, user, gameIDs, game, this.games, this);
+		if (type != 0) this.functions.get(type).execute(decoder, id, user, gameIDs, this.games, this);
 	}
 	
 	@Override

@@ -39,6 +39,7 @@ public abstract class Game {
     public void addUser(User user) {
         this.players.add(user);
         this.broadcastUsers();
+        user.setGame(this);
         user.sendMessage("You have successfully joined the game!");
     }
 

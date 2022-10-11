@@ -16,7 +16,6 @@ public abstract class Game {
     protected abstract int nextTurn(int n);
     public abstract void updateTurn();
     public abstract void start();
-    public abstract void end();
 
     public Game(String id, User user) {
         this.id = id;
@@ -86,6 +85,14 @@ public abstract class Game {
             else {
                 user.sendMessage(sender + ": " + message);
             }
+        }
+    }
+
+    public void end() {
+        this.broadcastMessage("The game has ended!");
+        for (User user: this.players) {
+			user.setGame(null);
+            user.setReady(false);
         }
     }
 }

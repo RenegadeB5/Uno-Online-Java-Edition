@@ -58,7 +58,7 @@ public class UnoGame extends Game {
         return (userIds.indexOf(id) + 2);
     }
 
-    private int nextTurn(int n) {
+    protected int nextTurn(int n) {
         int turn = super.turn;
         for (int i = 0; i < n; i++) {
             if (turn == super.players.size()+1 && this.direction == 1) {

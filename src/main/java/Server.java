@@ -57,7 +57,6 @@ public class Server extends WebSocketServer {
 						user.sendMessage("You are already in a game!");
 					}
 					else {
-						System.out.println(gameNum);
 						if (gameNum == 1) {
 							UnoGame new_game = new UnoGame(gameID, user);
 							games.add(new_game);

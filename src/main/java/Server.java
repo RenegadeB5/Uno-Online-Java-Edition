@@ -15,6 +15,10 @@ interface Worker {
 	void execute(Decoder decoder, String ID, User user, List<String> gameIDs, ArrayList<Game> games, Server server);
 }
 
+interface GameType <T> {
+	T gameObj;
+}
+
 public class Server extends WebSocketServer {
 	private int connections;
 	private int ongoingGames;
@@ -57,7 +61,7 @@ public class Server extends WebSocketServer {
 						user.sendMessage("You are already in a game!");
 					}
 					else {
-						UnoGame new_game = new UnoGame(gameID, user);
+						GameType <UnoGame> new_game = new GameType <UnoGame>() {UnoGame gameObj = new UnoGame(gameID, user);};
 						games.add(new_game);
 						user.setGame(new_game);
 						user.sendMessage("Game successfully created");
@@ -66,7 +70,7 @@ public class Server extends WebSocketServer {
 				}
 				else if (action == 1) {
 					if (gameIDs.contains(gameID) && user.getGame() == null) {
-						this.games.get(gameIDs.indexOf(gameID)).addUser(user);
+						server.games.get(gameIDs.indexOf(gameID)).addUser(user);
 					}
 					else {
 						user.sendMessage("That game ID doesn\'t exist!");
@@ -81,7 +85,7 @@ public class Server extends WebSocketServer {
 			public void execute(Decoder decoder, String ID, User user, List<String> gameIDs, ArrayList<Game> games, Server server) {
 				if (user.getGame() != null) {
 					String message = decoder.getString();
-					user.getGame().broadcastMessage(ID, user.getName(), message);
+					user.getGame().gameObj.broadcastMessage(ID, user.getName(), message);
 				}
 			}
 		};
@@ -91,9 +95,9 @@ public class Server extends WebSocketServer {
 					List<String> cards = new ArrayList<String>();
 					int gameNum = decoder.getInt();
 					if (gameNum == 0) {
+						UnoGame game = user.getGame().gameObj;
 						int amount = decoder.getInt();
 						for (int i = 0; i < amount; i++) {
-							UnoGame game = user.getGame();
 							String card = decoder.getString();
 							if (card.equals("draw")) {
 								game.deal(user.getID(), 1);
@@ -113,15 +117,15 @@ public class Server extends WebSocketServer {
 			public void execute(Decoder decoder, String ID, User user, List<String> gameIDs, ArrayList<Game> games, Server server) {
 				if (user.getGame() != null) {
 					user.setReady(true);
-					user.getGame().broadcastUsers();
-					user.getGame().start();
+					user.getGame().gameObj.broadcastUsers();
+					user.getGame().gameObj.start();
 				}
 			}
 		};
 		Worker func6 = new Worker() {
 			public void execute(Decoder decoder, String ID, User user, List<String> gameIDs, ArrayList<Game> games, Server server) {
 				if (user.getGame() != null) {
-					user.getGame().remove(ID);
+					user.getGame().gameObj.remove(ID);
 					user.setGame(null);
 					user.setReady(false);
 				}
@@ -185,12 +189,12 @@ public class Server extends WebSocketServer {
 			.collect(Collectors.toList());
 		User user = this.getUser(id);
 		if (user.getGame() != null) {
-			Game game = user.getGame();
+			GameType game = user.getGame();
 			List<String> gameIDs = this.gameIDs;
 			game.remove(user.getID());
 			game.broadcastMessage(user.getName() + " has left!");
 			if (game.playerCount() == 0) {
-				int index = gameIDs.indexOf(user.getGame().getID());
+				int index = gameIDs.indexOf(user.getGame().gameObj.getID());
 				this.games.remove(index);
 				this.ongoingGames -= 1;
 				this.updateGameIDs();

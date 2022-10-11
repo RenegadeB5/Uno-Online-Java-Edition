@@ -62,6 +62,7 @@ public class Server extends WebSocketServer {
 							games.add(new_game);
 							server.updateGameIDs();
 							user.setGameID(gameID);
+							user.setGameNum(1);
 							user.sendMessage("Game successfully created");
 						}
 					}

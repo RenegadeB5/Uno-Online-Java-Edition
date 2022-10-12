@@ -76,14 +76,14 @@ public class TicTacToeGame extends Game {
             eight >= 3
         };
         boolean winConditions[] = new boolean[] {
-            board[0] == board[1] && board[1] == board[2],
-            board[3] == board[4] && board[4] == board[5],
-            board[6] == board[7] && board[7] == board[8],
-            board[0] == board[3] && board[3] == board[6],
-            board[1] == board[4] && board[4] == board[7],
-            board[2] == board[5] && board[5] == board[8],
-            board[0] == board[4] && board[4] == board[8],
-            board[2] == board[4] && board[4] == board[6]
+            board[0] == board[1] && board[1] == board[2] && one >= 3,
+            board[3] == board[4] && board[4] == board[5] && two >= 3,
+            board[6] == board[7] && board[7] == board[8] && three >= 3,
+            board[0] == board[3] && board[3] == board[6] && four >= 3,
+            board[1] == board[4] && board[4] == board[7] && five >= 3,
+            board[2] == board[5] && board[5] == board[8] && six >= 3,
+            board[0] == board[4] && board[4] == board[8] && seven >= 3,
+            board[2] == board[4] && board[4] == board[6] && eight >= 3
         };
         int tie = 0;
         for (boolean check: tieConditions) {

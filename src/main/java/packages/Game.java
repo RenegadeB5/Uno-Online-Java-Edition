@@ -39,7 +39,7 @@ public abstract class Game {
     public void addUser(User user) {
         this.players.add(user);
         this.broadcastUsers();
-        user.sendMessage("You have successfully joined the game!");
+        user.sendMessage("You have successfully joined the game!", 1);
     }
 
     public void remove(String id) {
@@ -73,7 +73,7 @@ public abstract class Game {
 
     public void broadcastMessage(String message) {
         for (User user: this.players) {
-            user.sendMessage(message);
+            user.sendMessage(message, 0);
         }
     }
 
@@ -83,7 +83,7 @@ public abstract class Game {
                 
             }
             else {
-                user.sendMessage(sender + ": " + message);
+                user.sendMessage(sender + ": " + message, 0);
             }
         }
     }

@@ -58,9 +58,11 @@ public class User {
 		}
 	}
 	
-	public void sendMessage(String m) {
+	public void sendMessage(String m, int code) {
 		Encoder encoder = new Encoder();
-		encoder.addInt(3);
+		encoder.addInt(3); 
+		// 0 for normal, 1 for error (dialog box)
+		encoder.addInt(code);
 		encoder.addString(m);
 		this.ws.send(encoder.finish());
 	}

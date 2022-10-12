@@ -51,10 +51,10 @@ public class Server extends WebSocketServer {
 				String gameID = decoder.getString();
 				if (action == 0) {
 					if (gameIDs.contains(gameID)) {
-						user.sendMessage("That ID isn't available!");
+						user.sendMessage("That ID isn't available!", 2);
 					}
 					else if (user.getGame() != null) {
-						user.sendMessage("You are already in a game!");
+						user.sendMessage("You are already in a game!", 2);
 					}
 					else {
 						if (gameNum == 1) {
@@ -63,7 +63,7 @@ public class Server extends WebSocketServer {
 							server.updateGameIDs();
 							user.setGame(new_game);
 							user.setGameNum(1);
-							user.sendMessage("Game successfully created");
+							user.sendMessage("Game successfully created", 1);
 							Encoder encoder = new Encoder();
 							encoder.addInt(2);
 							encoder.addInt(1);
@@ -81,7 +81,7 @@ public class Server extends WebSocketServer {
 						user.send(encoder.finish());
 					}
 					else {
-						user.sendMessage("That game ID doesn\'t exist!");
+						user.sendMessage("That game ID doesn\'t exist!", 1);
 					}
 				}
 				else {

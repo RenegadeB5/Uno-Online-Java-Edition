@@ -81,7 +81,7 @@ public class UnoGame extends Game {
     public void updateTurn() {
         if (this.skip != 0) {
             for (int i = 0, j = super.turn; i < this.skip; i++) {
-                super.players.get(j-2).sendMessage("You were skipped!");
+                super.players.get(j-2).sendMessage("You were skipped!", 1);
                 j = this.nextTurn(1);
             }
             super.turn = this.nextTurn(1 + this.skip);
@@ -98,7 +98,7 @@ public class UnoGame extends Game {
             if (!contains) {
                 int draw = this.draw;
                 this.draw = 0;
-                super.players.get(this.nextTurn(1)-2).sendMessage("You picked up " + draw + " cards!");
+                super.players.get(this.nextTurn(1)-2).sendMessage("You picked up " + draw + " cards!", 1);
                 this.deal(super.players.get(this.nextTurn(1)-2).getID(), draw);
                 super.turn = this.nextTurn(2);
             }
@@ -107,7 +107,7 @@ public class UnoGame extends Game {
             super.turn = this.nextTurn(1);
         }
         this.broadcastCards();
-        super.players.get(super.turn-2).sendMessage("It's your turn!");
+        super.players.get(super.turn-2).sendMessage("It's your turn!", 0);
     }
 
     public void shuffle() {
@@ -120,11 +120,11 @@ public class UnoGame extends Game {
 			.collect(Collectors.toList())
             .get(0);
         if (!super.players.get(super.turn-2).getID().equals(id)) {
-            player.sendMessage("It isn't your turn!");
+            player.sendMessage("It isn't your turn!", 1);
             return;
         }
         if (!super.ongoing) {
-            player.sendMessage("The game hasn\'t started yet!");
+            player.sendMessage("The game hasn\'t started yet!", 1);
             return;
         }
         List<Card> playerCardsToClone = this.deck.stream()
@@ -160,7 +160,7 @@ public class UnoGame extends Game {
                 wild = true;
             }
             if (!go) {
-                player.sendMessage("You can't put that down!");
+                player.sendMessage("You can't put that down!", 1);
                 return;
             }
             top.color(card[0]);

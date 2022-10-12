@@ -236,7 +236,6 @@ public class Server extends WebSocketServer {
 			System.out.println(game.playerCount());
 			if (game.playerCount() == 0) {
 				int idx = gameIDs.indexOf(game.getID());
-				
 				System.out.println(idx);
 				this.games.remove(idx);
 				this.ongoingGames -= 1;

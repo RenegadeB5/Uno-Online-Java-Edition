@@ -86,7 +86,6 @@ public class Server extends WebSocketServer {
 				else if (action == 1) {
 					if (gameIDs.contains(gameID) && user.getGame() == null) {
 						Game game = server.games.get(gameIDs.indexOf(gameID));
-						int gameNum = (game instanceof UnoGame) ? 1 : 2;
 						game.addUser(user);
 						user.setGame(game);
 						user.setGameNum(gameNum);
@@ -234,8 +233,8 @@ public class Server extends WebSocketServer {
 			game.remove(user.getID());
 			game.broadcastMessage(user.getName() + " has left!");
 			if (game.playerCount() == 0) {
-				int index = gameIDs.indexOf(user.getGame());
-				this.games.remove(index);
+				int idx = gameIDs.indexOf(user.getGame());
+				this.games.remove(idx);
 				this.ongoingGames -= 1;
 				this.updateGameIDs();
 			}

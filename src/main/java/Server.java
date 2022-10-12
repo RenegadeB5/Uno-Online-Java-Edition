@@ -236,6 +236,7 @@ public class Server extends WebSocketServer {
 			}
 		}
 		int index = ids.indexOf(id);
+		System.out.println(index);
 		this.users.remove(index);
 		this.connections -= 1;
 	}

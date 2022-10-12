@@ -76,6 +76,10 @@ public class Server extends WebSocketServer {
 						Game game = server.games.get(gameIDs.indexOf(gameID));
 						game.addUser(user);
 						user.sendMessage("Sucessfully joined game!", 1);
+						Encoder encoder = new Encoder();
+						encoder.addInt(2);
+						encoder.addInt((game instanceof UnoGame) ? 1 : 2);
+						user.send(encoder.finish());
 					}
 					else {
 						user.sendMessage("That game ID doesn\'t exist!", 3);

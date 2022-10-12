@@ -56,9 +56,6 @@ public abstract class Game {
             if (player.getID().equals(id)) {
                 this.players.remove(i);
                 this.broadcastMessage(player.getName() + " has left the game.");
-                if (this.players.size() == 1 || this.players.size() == 0) {
-                    this.end();
-                }
             }
         }
         this.broadcastUsers();

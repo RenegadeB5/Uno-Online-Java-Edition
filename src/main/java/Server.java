@@ -233,6 +233,7 @@ public class Server extends WebSocketServer {
 			List<String> gameIDs = this.gameIDs;
 			game.remove(user.getID());
 			game.broadcastMessage(user.getName() + " has left!");
+			System.out.println(game.playerCount());
 			if (game.playerCount() == 0) {
 				int idx = gameIDs.indexOf(game.getID());
 				

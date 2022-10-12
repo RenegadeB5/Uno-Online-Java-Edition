@@ -148,7 +148,7 @@ public class Server extends WebSocketServer {
 						game.start();
 					}
 					else if (user.getGameNum() == 2) {
-						TicTacToeGame game = (TicTacToe)user.getGame();
+						TicTacToeGame game = (TicTacToeGame)user.getGame();
 						user.setReady(true);
 						game.broadcastUsers();
 						game.start();

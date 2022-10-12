@@ -69,6 +69,18 @@ public class Server extends WebSocketServer {
 							encoder.addInt(1);
 							user.send(encoder.finish());
 						}
+						else if (gameNum == 2) {
+							TicTacToeGame new_game = new TicTacToeGame(gameID, user);
+							games.add(new_game);
+							server.updateGameIDs();
+							user.setGame(new_game);
+							user.setGameNum(2);
+							user.sendMessage("Game successfully created", 1);
+							Encoder encoder = new Encoder();
+							encoder.addInt(2);
+							encoder.addInt(2);
+							user.send(encoder.finish());
+						}
 					}
 				}
 				else if (action == 1) {
@@ -118,6 +130,10 @@ public class Server extends WebSocketServer {
 							}
 						}
 						game.play(ID, cards);
+					}
+					else if (gameNum == 2) {
+						TicTacToeGame game = (TicTacToeGame)user.getGame();
+						game.play(user.getID(), decoder.getInt());
 					}
 				}
 			}

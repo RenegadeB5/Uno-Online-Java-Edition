@@ -65,7 +65,7 @@ public class TicTacToeGame extends Game {
         int six = board[2] + board[5] + board[8];
         int seven = board[0] + board[4] + board[8];
         int eight = board[2] + board[4] + board[6];
-        boolean tieConditions = new boolean[] {
+        boolean tieConditions[] = new boolean[] {
             one >= 3,
             two >= 3,
             three >= 3,
@@ -75,7 +75,7 @@ public class TicTacToeGame extends Game {
             seven >= 3,
             eight >= 3
         };
-        boolean winConditions = new boolean[] {
+        boolean winConditions[] = new boolean[] {
             board[0] == board[1] && board[1] == board[2],
             board[3] == board[4] && board[4] == board[5],
             board[6] == board[7] && board[7] == board[8],
@@ -92,14 +92,14 @@ public class TicTacToeGame extends Game {
         for (boolean check: winConditions) {
             if (check) {
                 this.broadcastBoard();
-                this.broadcastMessage(player.getName() + " has won!!!!", 0);
+                this.broadcastMessage(player.getName() + " has won!!!!");
                 this.end();
                 return;
             }
         }
         if (tie == 8) {
             this.broadcastBoard();
-            this.broadcastMessage("The game has tied!", 0);
+            this.broadcastMessage("The game has tied!");
             this.end();
             return;
         }

@@ -59,6 +59,7 @@ public class Server extends WebSocketServer {
 					else {
 						if (gameNum == 1) {
 							UnoGame new_game = new UnoGame(gameID, user);
+							new_game.setGameNumber(1);
 							games.add(new_game);
 							server.updateGameIDs();
 							user.setGame(new_game);
@@ -71,6 +72,7 @@ public class Server extends WebSocketServer {
 						}
 						else if (gameNum == 2) {
 							TicTacToeGame new_game = new TicTacToeGame(gameID, user);
+							new_game.setGameNumber(2);
 							games.add(new_game);
 							server.updateGameIDs();
 							user.setGame(new_game);
@@ -88,7 +90,7 @@ public class Server extends WebSocketServer {
 						Game game = server.games.get(gameIDs.indexOf(gameID));
 						Encoder encoder = new Encoder();
 						encoder.addInt(2);
-						encoder.addInt(gameNum);
+						encoder.addInt(game.getGameNumber());
 						user.send(encoder.finish());
 						game.addUser(user);
 						user.setGame(game);

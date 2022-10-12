@@ -9,6 +9,7 @@ import java.util.ArrayList;
 
 public abstract class Game {
     private String id;
+    private int gameNumber;
     protected ArrayList<User> players;
     protected boolean ongoing;
     protected int turn;
@@ -32,6 +33,14 @@ public abstract class Game {
 		return this.id;
 	}
 
+    public void setGameNumber(int num) {
+        this.gameNumber = num;
+    }
+
+    public int getGameNumber() {
+        return this.gameNumber;
+    }
+
     public int playerCount() {
         return this.players.size();
     }
@@ -39,7 +48,6 @@ public abstract class Game {
     public void addUser(User user) {
         this.players.add(user);
         this.broadcastUsers();
-        user.sendMessage("You have successfully joined the game!", 1);
     }
 
     public void remove(String id) {

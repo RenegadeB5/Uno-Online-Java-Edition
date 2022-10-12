@@ -31,11 +31,11 @@ public class User {
 		this.name = name;
 	}
 
-	public String getGame() {
+	public Game getGame() {
 		return this.game;
 	}
 
-	public void setGameID(Game game) {
+	public void setGame(Game game) {
 		this.game = game;
 	}
 

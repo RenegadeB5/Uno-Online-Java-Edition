@@ -66,13 +66,19 @@ public class Server extends WebSocketServer {
 							user.sendMessage("Game successfully created");
 							Encoder encoder = new Encoder();
 							encoder.addInt(2);
+							encoder.addInt(1);
 							user.send(encoder.finish());
 						}
 					}
 				}
 				else if (action == 1) {
 					if (gameIDs.contains(gameID) && user.getGameID() == null) {
-						server.games.get(gameIDs.indexOf(gameID)).addUser(user);
+						Game game = server.games.get(gameIDs.indexOf(gameID));
+						game.addUser(user);
+						Encoder encoder = new Encoder();
+						encoder.addInt(2);
+						encoder.addInt((game instanceof UnoGame) ? 1 : 2);
+						user.send(encoder.finish());
 					}
 					else {
 						user.sendMessage("That game ID doesn\'t exist!");

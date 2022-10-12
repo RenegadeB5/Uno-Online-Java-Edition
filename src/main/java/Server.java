@@ -94,7 +94,7 @@ public class Server extends WebSocketServer {
 						user.send(encoder.finish());
 						game.addUser(user);
 						user.setGame(game);
-						user.setGameNum(gameNum);
+						user.setGameNum(game.getGameNumber());
 						user.sendMessage("Sucessfully joined game!", 1);
 					}
 					else {

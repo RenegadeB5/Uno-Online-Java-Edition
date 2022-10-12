@@ -11,7 +11,7 @@ public class TicTacToeGame extends Game {
 
     public int[] board;
 
-    public TicTacToe(String id, User user) {
+    public TicTacToeGame(String id, User user) {
         super(id, user);
         this.board = new int[] {0, 0, 0, 0, 0, 0, 0, 0, 0};
     }

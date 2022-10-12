@@ -86,14 +86,14 @@ public class Server extends WebSocketServer {
 				else if (action == 1) {
 					if (gameIDs.contains(gameID) && user.getGame() == null) {
 						Game game = server.games.get(gameIDs.indexOf(gameID));
-						game.addUser(user);
-						user.setGame(game);
-						user.setGameNum(gameNum);
-						user.sendMessage("Sucessfully joined game!", 1);
 						Encoder encoder = new Encoder();
 						encoder.addInt(2);
 						encoder.addInt(gameNum);
 						user.send(encoder.finish());
+						game.addUser(user);
+						user.setGame(game);
+						user.setGameNum(gameNum);
+						user.sendMessage("Sucessfully joined game!", 1);
 					}
 					else {
 						user.sendMessage("That game ID doesn\'t exist!", 3);

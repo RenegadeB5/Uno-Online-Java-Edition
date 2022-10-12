@@ -86,11 +86,14 @@ public class Server extends WebSocketServer {
 				else if (action == 1) {
 					if (gameIDs.contains(gameID) && user.getGame() == null) {
 						Game game = server.games.get(gameIDs.indexOf(gameID));
+						int gameNum = (game instanceof UnoGame) ? 1 : 2;
 						game.addUser(user);
+						user.setGame(game);
+						user.setGameNum(gameNum);
 						user.sendMessage("Sucessfully joined game!", 1);
 						Encoder encoder = new Encoder();
 						encoder.addInt(2);
-						encoder.addInt((game instanceof UnoGame) ? 1 : 2);
+						encoder.addInt(gameNum);
 						user.send(encoder.finish());
 					}
 					else {
@@ -222,6 +225,8 @@ public class Server extends WebSocketServer {
 		List<String> ids = this.users.stream()
 			.map(usr -> usr.getID())
 			.collect(Collectors.toList());
+		int index = ids.indexOf(id);
+		System.out.println(index);
 		User user = this.getUser(id);
 		if (user.getGame() != null) {
 			Game game = user.getGame();
@@ -235,8 +240,6 @@ public class Server extends WebSocketServer {
 				this.updateGameIDs();
 			}
 		}
-		int index = ids.indexOf(id);
-		System.out.println(index);
 		this.users.remove(index);
 		this.connections -= 1;
 	}

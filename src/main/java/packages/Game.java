@@ -91,7 +91,7 @@ public abstract class Game {
     public void end() {
         this.broadcastMessage("The game has ended!");
         for (User user: this.players) {
-			user.setGameID(null);
+			user.setGame(null);
             user.setGameNum(0);
             user.setReady(false);
         }

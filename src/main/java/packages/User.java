@@ -5,7 +5,7 @@ import org.java_websocket.WebSocket;
 public class User {
 	private String id;
 	private String name;
-	private String gameID;
+	private Game game;
 	private int gameNum;
 	private boolean ready;
 	private WebSocket ws;
@@ -13,7 +13,7 @@ public class User {
 	public User(String id, WebSocket ws) {
 		this.id = id;
 		this.name = null;
-		this.gameID = null;
+		this.game = null;
 		this.gameNum = 0;
 		this.ready = false;
 		this.ws = ws;
@@ -31,12 +31,12 @@ public class User {
 		this.name = name;
 	}
 
-	public String getGameID() {
-		return this.gameID;
+	public String getGame() {
+		return this.game;
 	}
 
-	public void setGameID(String gameID) {
-		this.gameID = gameID;
+	public void setGameID(Game game) {
+		this.game = game;
 	}
 
 	public int getGameNum() {

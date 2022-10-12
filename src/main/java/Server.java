@@ -227,7 +227,6 @@ public class Server extends WebSocketServer {
 			.map(usr -> usr.getID())
 			.collect(Collectors.toList());
 		int index = ids.indexOf(id);
-		System.out.println(index);
 		User user = this.getUser(id);
 		if (user.getGame() != null) {
 			Game game = user.getGame();
@@ -236,6 +235,8 @@ public class Server extends WebSocketServer {
 			game.broadcastMessage(user.getName() + " has left!");
 			if (game.playerCount() == 0) {
 				int idx = gameIDs.indexOf(game.getID());
+				
+				System.out.println(idx);
 				this.games.remove(idx);
 				this.ongoingGames -= 1;
 				this.updateGameIDs();

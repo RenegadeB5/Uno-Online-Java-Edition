@@ -51,6 +51,26 @@ public class UnoGame extends Game {
         }
     }
 
+    public void reset() {
+        super.turn = 2;
+        this.direction = 1;
+        this.draw = 0;
+        this.skip = 0;
+        for (Card card: this.deck) {
+            card.position(0);
+        }
+        for (int i = 0; i < 10; i++) {
+            this.shuffle();
+        }
+        for (Card card: this.deck) {
+            if (!card.number().equals("wild") && !card.number().equals("+4")) {
+                this.top = new Card(card.color(), card.number());
+                card.position(1);
+                break;
+            }
+        }
+    }
+
     public int getPosition(String id) {
         List<String> userIds = super.players.stream()
             .map(user -> user.getID())

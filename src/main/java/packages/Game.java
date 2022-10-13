@@ -17,6 +17,7 @@ public abstract class Game {
     protected abstract int nextTurn(int n);
     public abstract void updateTurn();
     public abstract void start();
+    public abstract void reset();
 
     public Game(String id, User user) {
         this.id = id;
@@ -101,6 +102,7 @@ public abstract class Game {
         for (User user: this.players) {
             user.setReady(false);
         }
+        this.reset();
         this.broadcastUsers();
     }
 }

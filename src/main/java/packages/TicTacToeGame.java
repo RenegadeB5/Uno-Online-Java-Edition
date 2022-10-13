@@ -132,4 +132,8 @@ public class TicTacToeGame extends Game {
             user.send(encoder.finish());
         }
     }
+
+    public void reset() {
+        this.board = new int[] {0, 0, 0, 0, 0, 0, 0, 0, 0};
+    }
 }

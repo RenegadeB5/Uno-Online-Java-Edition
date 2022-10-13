@@ -212,7 +212,7 @@ public class UnoGame extends Game {
             }
         }
         if (playerCards.size() == 0) {
-            super.broadcastMessage(player.getName() + " has won!!!!!!\nThe room will close soon!");
+            super.broadcastMessage(player.getName() + " has won!!!!!!", 1);
             this.broadcastCards();
             this.end();
             return;

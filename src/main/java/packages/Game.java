@@ -82,12 +82,15 @@ public abstract class Game {
         }
     }
 
+    public void broadcastMessage(String message, int code) {
+        for (User user: this.players) {
+            user.sendMessage(message, code);
+        }
+    }
+
     public void broadcastMessage(String exclude, String sender, String message) {
         for (User user: this.players) {
-            if (user.getID().equals(exclude)) {
-                
-            }
-            else {
+            if (!user.getID().equals(exclude)) {
                 user.sendMessage(sender + ": " + message, 0);
             }
         }
@@ -96,9 +99,8 @@ public abstract class Game {
     public void end() {
         this.broadcastMessage("The game has ended!");
         for (User user: this.players) {
-			user.setGame(null);
-            user.setGameNum(0);
             user.setReady(false);
         }
+        this.broadcastUsers();
     }
 }

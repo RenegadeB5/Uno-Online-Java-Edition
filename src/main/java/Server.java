@@ -228,6 +228,7 @@ public class Server extends WebSocketServer {
 			.collect(Collectors.toList());
 		int index = ids.indexOf(id);
 		User user = this.getUser(id);
+		System.out.println(user.getGame());
 		if (user.getGame() != null) {
 			Game game = user.getGame();
 			List<String> gameIDs = this.gameIDs;

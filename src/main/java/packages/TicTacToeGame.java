@@ -134,6 +134,7 @@ public class TicTacToeGame extends Game {
     }
 
     public void reset() {
+        this.ongoing = false;
         this.board = new int[] {0, 0, 0, 0, 0, 0, 0, 0, 0};
     }
 }

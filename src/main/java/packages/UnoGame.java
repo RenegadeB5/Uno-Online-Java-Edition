@@ -52,6 +52,7 @@ public class UnoGame extends Game {
     }
 
     public void reset() {
+        this.ongoing = false;
         super.turn = 2;
         this.direction = 1;
         this.draw = 0;

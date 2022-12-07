@@ -83,6 +83,8 @@ public class Server extends WebSocketServer {
 							encoder.addInt(2);
 							user.send(encoder.finish());
 						}
+						else if (gameNum == 3) {
+						}
 					}
 				}
 				else if (action == 1) {
